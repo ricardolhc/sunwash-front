@@ -4,7 +4,16 @@
     "types": ["jest", "node"],
     "module": "CommonJS",
     "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
+    "resolveJsonModule": true,
     "verbatimModuleSyntax": false,
     "esModuleInterop": true
-  }
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/test/setup.ts",
+    "src/env.d.ts"
+  ],
+  "exclude": []
 }

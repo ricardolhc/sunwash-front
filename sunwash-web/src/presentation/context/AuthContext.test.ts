@@ -5,6 +5,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import type { AuthGateway } from '../../application/gateway/AuthGateway';
 import { clearAccessToken, getAccessToken, setAccessToken } from '../../infra/http/authToken';
 import { AuthProvider, createSessionRestorer, restoreAuthSession, useAuthContext, type AuthContextValue } from './AuthContext';
+import { DependencyProvider } from './DependencyContext';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -115,6 +116,38 @@ describe('auth session restoration', () => {
     expect(context!.status).toBe('anonymous');
     expect(context!.user).toBeNull();
     expect(getAccessToken()).toBeNull();
+
+    await act(async () => {
+      root.unmount();
+    });
+  });
+
+  test('uses the dependency auth gateway when none is passed directly', async () => {
+    const gateway = gatewayWith(jest.fn().mockResolvedValue(authResult));
+    let context: AuthContextValue | undefined;
+    const container = document.createElement('div');
+    const root: Root = createRoot(container);
+
+    await act(async () => {
+      root.render(createElement(
+        DependencyProvider,
+        {
+          overrideDependencies: { authGateway: gateway },
+          children: createElement(
+            AuthProvider,
+            null,
+            createElement(AuthStateProbe, { onValue: (value: AuthContextValue) => { context = value; } }),
+          ),
+        },
+      ));
+    });
+
+    await act(async () => {
+      await context!.restoreSession();
+    });
+
+    expect(context!.status).toBe('authenticated');
+    expect(context!.user).toMatchObject({ email: 'ana@example.com' });
 
     await act(async () => {
       root.unmount();

@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sun, Sparkles, Calendar, LayoutDashboard, Shield, Menu, X } from 'lucide-react';
+import { Sun, Sparkles, Calendar, LayoutDashboard, Shield, LogOut, Menu, X } from 'lucide-react';
 import { ROUTES } from '../constants/routes';
+import { useAuth } from '../../presentation/context/useAuth';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { status, user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
+  const isAuthenticated = status === 'authenticated' && !!user;
+  const isAnonymous = !isAuthenticated;
+  const showClientPanel = user?.role === 'USER';
+  const showAdminPanel = user?.role === 'ADMIN';
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-100 shadow-xs">
@@ -52,38 +58,61 @@ export const Navbar: React.FC = () => {
               <Calendar className="w-4 h-4 text-cyan-600" />
               Agendar Limpeza
             </Link>
-            <Link
-              to={ROUTES.PANEL}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
-                isActive(ROUTES.PANEL)
-                  ? 'text-cyan-700 bg-cyan-50 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <LayoutDashboard className="w-4 h-4 text-slate-500" />
-              Painel do Cliente
-            </Link>
-            <Link
-              to={ROUTES.ADMIN}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
-                isActive(ROUTES.ADMIN)
-                  ? 'text-cyan-700 bg-cyan-50 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <Shield className="w-4 h-4 text-amber-500" />
-              Admin
-            </Link>
+            {showClientPanel && (
+              <Link
+                to={ROUTES.PANEL}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                  isActive(ROUTES.PANEL)
+                    ? 'text-cyan-700 bg-cyan-50 font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4 text-slate-500" />
+                Painel do Cliente
+              </Link>
+            )}
+            {showAdminPanel && (
+              <Link
+                to={ROUTES.ADMIN}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                  isActive(ROUTES.ADMIN)
+                    ? 'text-cyan-700 bg-cyan-50 font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <Shield className="w-4 h-4 text-amber-500" />
+                Admin
+              </Link>
+            )}
           </nav>
 
           {/* Right Action */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              to={ROUTES.SCHEDULE}
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg shadow-sm shadow-cyan-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Agendar Agora
-            </Link>
+            {isAnonymous ? (
+              <>
+                <Link
+                  to={ROUTES.LOGIN}
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg shadow-sm transition-colors"
+                >
+                  Entrar
+                </Link>
+                <Link
+                  to={ROUTES.REGISTER}
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg shadow-sm shadow-cyan-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Cadastrar
+                </Link>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void logout()}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg shadow-sm transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -116,28 +145,55 @@ export const Navbar: React.FC = () => {
           >
             Agendar Limpeza
           </Link>
-          <Link
-            to={ROUTES.PANEL}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
-          >
-            Painel do Cliente
-          </Link>
-          <Link
-            to={ROUTES.ADMIN}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
-          >
-            Painel Administrativo
-          </Link>
-          <div className="pt-2">
+          {showClientPanel && (
             <Link
-              to={ROUTES.SCHEDULE}
+              to={ROUTES.PANEL}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg shadow-sm"
+              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
             >
-              Solicitar Agendamento
+              Painel do Cliente
             </Link>
+          )}
+          {showAdminPanel && (
+            <Link
+              to={ROUTES.ADMIN}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
+            >
+              Admin
+            </Link>
+          )}
+          <div className="pt-2 space-y-2">
+            {isAnonymous ? (
+              <>
+                <Link
+                  to={ROUTES.LOGIN}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm"
+                >
+                  Entrar
+                </Link>
+                <Link
+                  to={ROUTES.REGISTER}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg shadow-sm"
+                >
+                  Cadastrar
+                </Link>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  void logout();
+                }}
+                className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 rounded-lg shadow-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair
+              </button>
+            )}
           </div>
         </div>
       )}

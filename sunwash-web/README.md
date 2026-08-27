@@ -12,9 +12,11 @@ Frontend React integrado a API Spring Boot em `sunwash-back/back`.
 4. Copie `.env-template` para `.env`, preencha `VITE_STRIPE_PUBLIC_KEY` e
    `VITE_ADMIN_API_TOKEN`, e execute `npm run dev`.
 
-`VITE_USE_HTTP=true` ativa os gateways reais. Use `false` apenas para os mocks
-em memoria. Em producao, configure `FRONTEND_ALLOWED_ORIGINS` no backend. O
-bucket S3 precisa permitir leitura das imagens enviadas (direta ou por CDN).
+`VITE_USE_HTTP=true` ativa os gateways reais para agendamento e pagamento.
+`VITE_USE_HTTP_AUTH=true` ativa o login via backend; deixe `false` para usar o
+`DummyAuthGateway` local com usuários de fixture. Em producao, configure
+`FRONTEND_ALLOWED_ORIGINS` no backend. O bucket S3 precisa permitir leitura das
+imagens enviadas (direta ou por CDN).
 
 ## Base tecnica
 

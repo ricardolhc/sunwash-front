@@ -14,8 +14,11 @@ import { MemoryAppointmentGateway } from '../../infra/gateway/MemoryAppointmentG
 import { HttpAppointmentGateway } from '../../infra/gateway/HttpAppointmentGateway';
 import { MemoryPaymentGateway } from '../../infra/gateway/MemoryPaymentGateway';
 import { HttpPaymentGateway } from '../../infra/gateway/HttpPaymentGateway';
+import type { AuthGateway } from '../../application/gateway/AuthGateway';
+import { createAuthGateway } from '../../infra/gateway/createAuthGateway';
 
 export interface DependencyContainer {
+  authGateway: AuthGateway;
   appointmentGateway: AppointmentGateway;
   paymentGateway: PaymentGateway;
   createAppointmentUseCase: CreateAppointmentUseCase;
@@ -41,7 +44,10 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({
   overrideDependencies,
 }) => {
   const dependencies = useMemo<DependencyContainer>(() => {
-    const useHttp = import.meta.env.VITE_USE_HTTP !== 'false';
+    const useHttp = typeof __VITE_USE_HTTP__ === 'boolean' ? __VITE_USE_HTTP__ : true;
+    const useHttpAuth = typeof __VITE_USE_HTTP_AUTH__ === 'boolean' ? __VITE_USE_HTTP_AUTH__ : false;
+
+    const authGateway = createAuthGateway(useHttpAuth, overrideDependencies?.authGateway);
 
     const appointmentGateway: AppointmentGateway =
       overrideDependencies?.appointmentGateway ??
@@ -88,6 +94,7 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({
       new FinalizeServiceAndCaptureUseCase(appointmentGateway, paymentGateway);
 
     return {
+      authGateway,
       appointmentGateway,
       paymentGateway,
       createAppointmentUseCase,

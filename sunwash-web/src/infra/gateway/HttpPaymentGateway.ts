@@ -6,6 +6,8 @@ import type {
 } from '../../application/gateway/PaymentGateway';
 import { api, isNotFound, numericId } from '../http/api';
 
+declare const __VITE_ADMIN_API_TOKEN__: string;
+
 interface PixCheckoutResponse {
   paymentId: number;
   appointmentId: number;
@@ -86,7 +88,7 @@ export class HttpPaymentGateway implements PaymentGateway {
     const response = await api.post<{ paymentId: number; appointmentId: number; amount: number }>(
       `/admin/payments/capture/${numericId(paymentId)}`,
       undefined,
-      { headers: { 'X-Admin-Token': import.meta.env.VITE_ADMIN_API_TOKEN || '' } },
+      { headers: { 'X-Admin-Token': typeof __VITE_ADMIN_API_TOKEN__ === 'string' ? __VITE_ADMIN_API_TOKEN__ : '' } },
     );
     return {
       id: paymentId,

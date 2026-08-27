@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AuthGateway, AuthResult, LoginInput, RegisterInput } from '../../application/gateway/AuthGateway';
 import type { User } from '../../domain/User';
-import { HttpAuthGateway } from '../../infra/gateway/HttpAuthGateway';
+import { DummyAuthGateway } from '../../infra/gateway/DummyAuthGateway';
 import { clearAccessToken, setAccessToken, setSessionExpiredHandler } from '../../infra/http/authToken';
+import { DependencyContext } from './DependencyContext';
 
 export type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
 
@@ -42,7 +43,8 @@ export interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
-  const [gateway] = useState<AuthGateway>(() => authGateway ?? new HttpAuthGateway());
+  const dependencies = useContext(DependencyContext);
+  const [gateway] = useState<AuthGateway>(() => authGateway ?? dependencies?.authGateway ?? new DummyAuthGateway());
   const restorer = useMemo(() => createSessionRestorer(gateway), [gateway]);
   const sessionGeneration = useRef(0);
   const [user, setUser] = useState<User | null>(null);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDependencies } from '../context/useDependencies';
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
+import { appointmentStatusLabel } from '../../domain/appointmentStatus';
 
 export const useAdminDashboardController = () => {
   const queryClient = useQueryClient();
@@ -39,7 +40,7 @@ export const useAdminDashboardController = () => {
       return updateAppointmentStatusUseCase.execute(id, status);
     },
     onSuccess: (updated) => {
-      setSuccessMessage(`Status do agendamento #${updated.id} atualizado para ${updated.status}.`);
+      setSuccessMessage(`Status do agendamento #${updated.id} atualizado para ${appointmentStatusLabel(updated.status)}.`);
       queryClient.invalidateQueries({ queryKey: ['admin-appointments'] });
       queryClient.invalidateQueries({ queryKey: ['client-appointments'] });
     },

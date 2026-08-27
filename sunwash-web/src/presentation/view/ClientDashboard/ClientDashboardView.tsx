@@ -13,7 +13,8 @@ import { Navbar } from '../../../shared/components/Navbar';
 import { Footer } from '../../../shared/components/Footer';
 import { ImageComparison } from '../../../shared/components/ImageComparison';
 import { formatCurrency, formatDateTime } from '../../../shared/utils/formatters';
-import type { Appointment } from '../../../domain/Appointment';
+import type { Appointment, AppointmentStatus } from '../../../domain/Appointment';
+import { appointmentStatusLabel } from '../../../domain/appointmentStatus';
 
 interface TimelineStep {
   id: string;
@@ -57,34 +58,36 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({
     );
   }
 
-  const getStatusBadge = (status?: string) => {
+  const getStatusBadge = (status?: AppointmentStatus) => {
+    const label = appointmentStatusLabel(status ?? 'PENDING');
+
     switch (status) {
       case 'COMPLETED':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            Serviço Concluído
+            {label}
           </span>
         );
       case 'IN_PROGRESS':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
             <Clock className="w-3.5 h-3.5 text-amber-600" />
-            Em Execução
+            {label}
           </span>
         );
       case 'CONFIRMED':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-800 border border-cyan-200">
             <Calendar className="w-3.5 h-3.5 text-cyan-600" />
-            Agendado
+            {label}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700">
             <Clock className="w-3.5 h-3.5 text-slate-500" />
-            Pendente
+            {label}
           </span>
         );
     }

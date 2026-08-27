@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDependencies } from '../context/useDependencies';
 import { STORAGE_KEYS } from '../../shared/constants/storage';
-import type { Appointment } from '../../domain/Appointment';
+import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
+import { appointmentStatusLabel } from '../../domain/appointmentStatus';
 
 export const useClientDashboardController = () => {
   const { listUserAppointmentsUseCase } = useDependencies();
@@ -25,15 +26,15 @@ export const useClientDashboardController = () => {
   const activeAppointment: Appointment | undefined =
     appointments.find((a) => a.id === (selectedAppointmentId || storedId)) || appointments[0];
 
-  const getTimelineSteps = (status?: string) => {
+  const getTimelineSteps = (status?: AppointmentStatus) => {
     const steps = [
-      { id: 'PENDING', label: 'Solicitado', description: 'Aguardando confirmação e agendamento' },
-      { id: 'CONFIRMED', label: 'Confirmado', description: 'Técnico e horário alocados' },
-      { id: 'IN_PROGRESS', label: 'Em Andamento', description: 'Equipe no local / Vistoria drone' },
-      { id: 'COMPLETED', label: 'Concluído', description: 'Limpeza e relatório finalizados' },
+      { id: 'PENDING', label: appointmentStatusLabel('PENDING'), description: 'Aguardando confirmação e agendamento' },
+      { id: 'CONFIRMED', label: appointmentStatusLabel('CONFIRMED'), description: 'Técnico e horário alocados' },
+      { id: 'IN_PROGRESS', label: appointmentStatusLabel('IN_PROGRESS'), description: 'Equipe no local / Vistoria drone' },
+      { id: 'COMPLETED', label: appointmentStatusLabel('COMPLETED'), description: 'Limpeza e relatório finalizados' },
     ];
 
-    const statusOrder: Record<string, number> = {
+    const statusOrder: Record<AppointmentStatus, number> = {
       PENDING: 0,
       CONFIRMED: 1,
       IN_PROGRESS: 2,

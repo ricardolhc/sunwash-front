@@ -15,6 +15,7 @@ import { Footer } from '../../../shared/components/Footer';
 import { ToastNotification } from '../../../shared/components/ToastNotification';
 import { formatCurrency, formatDateTime } from '../../../shared/utils/formatters';
 import type { Appointment, AppointmentStatus } from '../../../domain/Appointment';
+import { appointmentStatusLabel, appointmentStatuses } from '../../../domain/appointmentStatus';
 
 interface AdminDashboardViewProps {
   appointments: Appointment[];
@@ -133,7 +134,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   Filtrar por Status:
                 </span>
                 <div className="flex flex-wrap gap-1.5">
-                  {['ALL', 'PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].map((st) => (
+                  {(['ALL', ...appointmentStatuses] as const).map((st) => (
                     <button
                       key={st}
                       type="button"
@@ -144,7 +145,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      {st === 'ALL' ? 'Todos' : st}
+                      {st === 'ALL' ? 'Todos' : appointmentStatusLabel(st)}
                     </button>
                   ))}
                 </div>
@@ -211,11 +212,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             }
                             className="text-xs font-bold py-1.5 px-2.5 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
                           >
-                            <option value="PENDING">PENDENTE</option>
-                            <option value="CONFIRMED">CONFIRMADO</option>
-                            <option value="IN_PROGRESS">EM ANDAMENTO</option>
-                            <option value="COMPLETED">CONCLUÍDO</option>
-                            <option value="CANCELLED">CANCELADO</option>
+                            {appointmentStatuses.map((status) => (
+                              <option key={status} value={status}>
+                                {appointmentStatusLabel(status)}
+                              </option>
+                            ))}
                           </select>
                         </td>
 

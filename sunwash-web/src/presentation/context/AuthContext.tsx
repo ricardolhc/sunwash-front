@@ -9,8 +9,8 @@ export type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
 export interface AuthContextValue {
   user: User | null;
   status: AuthStatus;
-  login(input: LoginInput): Promise<void>;
-  register(input: RegisterInput): Promise<void>;
+  login(input: LoginInput): Promise<AuthResult>;
+  register(input: RegisterInput): Promise<AuthResult>;
   logout(): Promise<void>;
   restoreSession(): Promise<void>;
 }
@@ -93,16 +93,18 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
     };
   }, [startSessionOperation]);
 
-  const login = useCallback(async (input: LoginInput): Promise<void> => {
+  const login = useCallback(async (input: LoginInput): Promise<AuthResult> => {
     const generation = startSessionOperation();
     const result = await gateway.login(input);
     if (isCurrentSessionOperation(generation)) authenticate(result);
+    return result;
   }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
 
-  const register = useCallback(async (input: RegisterInput): Promise<void> => {
+  const register = useCallback(async (input: RegisterInput): Promise<AuthResult> => {
     const generation = startSessionOperation();
     const result = await gateway.register(input);
     if (isCurrentSessionOperation(generation)) authenticate(result);
+    return result;
   }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
 
   const logout = useCallback(async (): Promise<void> => {

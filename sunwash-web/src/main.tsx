@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import App from './App.tsx'
 import { DependencyProvider } from './presentation/context/DependencyContext.tsx'
+import { AuthProvider } from './presentation/context/AuthContext.tsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,9 +19,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <DependencyProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </DependencyProvider>
     </QueryClientProvider>
   </StrictMode>,
 )
-

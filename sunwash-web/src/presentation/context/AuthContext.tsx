@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AuthGateway, AuthResult, LoginInput, RegisterInput } from '../../application/gateway/AuthGateway';
 import type { User } from '../../domain/User';
 import { HttpAuthGateway } from '../../infra/gateway/HttpAuthGateway';
@@ -19,11 +19,8 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const restoreAuthSession = async (gateway: AuthGateway): Promise<AuthResult | null> => {
   try {
-    const result = await gateway.refresh();
-    setAccessToken(result.accessToken);
-    return result;
+    return await gateway.refresh();
   } catch {
-    clearAccessToken();
     return null;
   }
 };
@@ -32,21 +29,32 @@ export const createSessionRestorer = (gateway: AuthGateway): (() => Promise<Auth
   let restoration: Promise<AuthResult | null> | null = null;
 
   return () => {
-    restoration ??= restoreAuthSession(gateway);
+    restoration ??= restoreAuthSession(gateway).finally(() => {
+      restoration = null;
+    });
     return restoration;
   };
 };
 
 export interface AuthProviderProps {
-  children: ReactNode;
+  children?: ReactNode;
   authGateway?: AuthGateway;
 }
 
 export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
   const [gateway] = useState<AuthGateway>(() => authGateway ?? new HttpAuthGateway());
   const restorer = useMemo(() => createSessionRestorer(gateway), [gateway]);
+  const sessionGeneration = useRef(0);
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
+
+  const startSessionOperation = useCallback((): number => {
+    sessionGeneration.current += 1;
+    return sessionGeneration.current;
+  }, []);
+
+  const isCurrentSessionOperation = useCallback((generation: number): boolean =>
+    sessionGeneration.current === generation, []);
 
   const authenticate = useCallback((result: AuthResult): void => {
     setAccessToken(result.accessToken);
@@ -55,8 +63,11 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
   }, []);
 
   const restoreSession = useCallback(async (): Promise<void> => {
+    const generation = startSessionOperation();
     setStatus('loading');
     const result = await restorer();
+    if (!isCurrentSessionOperation(generation)) return;
+
     if (result) {
       authenticate(result);
       return;
@@ -64,7 +75,7 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
 
     setUser(null);
     setStatus('anonymous');
-  }, [authenticate, restorer]);
+  }, [authenticate, isCurrentSessionOperation, restorer, startSessionOperation]);
 
   useEffect(() => {
     void restoreSession();
@@ -72,6 +83,7 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
 
   useEffect(() => {
     setSessionExpiredHandler(() => {
+      startSessionOperation();
       setUser(null);
       setStatus('anonymous');
     });
@@ -79,25 +91,32 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
     return () => {
       setSessionExpiredHandler(undefined);
     };
-  }, []);
+  }, [startSessionOperation]);
 
   const login = useCallback(async (input: LoginInput): Promise<void> => {
-    authenticate(await gateway.login(input));
-  }, [authenticate, gateway]);
+    const generation = startSessionOperation();
+    const result = await gateway.login(input);
+    if (isCurrentSessionOperation(generation)) authenticate(result);
+  }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
 
   const register = useCallback(async (input: RegisterInput): Promise<void> => {
-    authenticate(await gateway.register(input));
-  }, [authenticate, gateway]);
+    const generation = startSessionOperation();
+    const result = await gateway.register(input);
+    if (isCurrentSessionOperation(generation)) authenticate(result);
+  }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
 
   const logout = useCallback(async (): Promise<void> => {
+    const generation = startSessionOperation();
     try {
       await gateway.logout();
     } finally {
-      clearAccessToken();
-      setUser(null);
-      setStatus('anonymous');
+      if (isCurrentSessionOperation(generation)) {
+        clearAccessToken();
+        setUser(null);
+        setStatus('anonymous');
+      }
     }
-  }, [gateway]);
+  }, [gateway, isCurrentSessionOperation, startSessionOperation]);
 
   const value = useMemo<AuthContextValue>(() => ({
     user,

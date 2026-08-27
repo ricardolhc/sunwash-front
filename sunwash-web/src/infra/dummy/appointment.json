@@ -1,0 +1,103 @@
+[
+  {
+    "id": "app-sun-001",
+    "userId": "user-client-01",
+    "clientName": "Ricardo Carvalho",
+    "clientEmail": "ricardo@exemplo.com.br",
+    "clientPhone": "(11) 98765-4321",
+    "address": {
+      "street": "Travessa das Castanheiras",
+      "number": "450",
+      "neighborhood": "Jardim Solar",
+      "city": "Campinas",
+      "state": "SP",
+      "zipCode": "13080-000",
+      "complement": "Casa 02"
+    },
+    "dateTime": "2026-08-30T10:00:00",
+    "panelsCount": 16,
+    "roofPhotoUrl": "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=800&q=80",
+    "droneBeforePhotoUrl": "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=1200&q=80",
+    "droneAfterPhotoUrl": "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=1200&q=80",
+    "status": "COMPLETED",
+    "price": 360.0,
+    "paymentMethod": "CREDIT_CARD",
+    "paymentStatus": "PAID",
+    "createdAt": "2026-08-20T14:30:00",
+    "completedAt": "2026-08-25T11:45:00",
+    "notes": "Telhado com inclinação moderada, acesso fácil pelo corredor lateral."
+  },
+  {
+    "id": "app-sun-002",
+    "userId": "user-client-01",
+    "clientName": "Ricardo Carvalho",
+    "clientEmail": "ricardo@exemplo.com.br",
+    "clientPhone": "(11) 98765-4321",
+    "address": {
+      "street": "Av. Paulista",
+      "number": "1200",
+      "neighborhood": "Bela Vista",
+      "city": "São Paulo",
+      "state": "SP",
+      "zipCode": "01310-100"
+    },
+    "dateTime": "2026-08-28T14:00:00",
+    "panelsCount": 24,
+    "roofPhotoUrl": "https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?auto=format&fit=crop&w=800&q=80",
+    "droneBeforePhotoUrl": "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=1200&q=80",
+    "droneAfterPhotoUrl": "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=1200&q=80",
+    "status": "IN_PROGRESS",
+    "price": 480.0,
+    "paymentMethod": "PIX",
+    "paymentStatus": "PAID",
+    "createdAt": "2026-08-22T09:15:00",
+    "notes": "Inspeção preliminar de drone em andamento."
+  },
+  {
+    "id": "app-sun-003",
+    "userId": "user-client-02",
+    "clientName": "Fernanda Souza",
+    "clientEmail": "fernanda@empresa.com",
+    "clientPhone": "(19) 99887-7665",
+    "address": {
+      "street": "Rua das Palmeiras",
+      "number": "88",
+      "neighborhood": "Vila Nova",
+      "city": "Valinhos",
+      "state": "SP",
+      "zipCode": "13270-000"
+    },
+    "dateTime": "2026-08-29T09:00:00",
+    "panelsCount": 12,
+    "roofPhotoUrl": "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&w=800&q=80",
+    "status": "CONFIRMED",
+    "price": 300.0,
+    "paymentMethod": "CREDIT_CARD",
+    "paymentStatus": "AUTHORIZED",
+    "createdAt": "2026-08-24T16:20:00",
+    "notes": "Caução autorizada. Técnico designado para o turno da manhã."
+  },
+  {
+    "id": "app-sun-004",
+    "userId": "user-client-03",
+    "clientName": "Marcos Silveira",
+    "clientEmail": "marcos.silveira@solar.org",
+    "clientPhone": "(11) 97123-4455",
+    "address": {
+      "street": "Rua das Magnólias",
+      "number": "312",
+      "neighborhood": "Granja Viana",
+      "city": "Cotia",
+      "state": "SP",
+      "zipCode": "06700-000"
+    },
+    "dateTime": "2026-08-29T15:30:00",
+    "panelsCount": 30,
+    "roofPhotoUrl": "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+    "status": "PENDING",
+    "price": 570.0,
+    "paymentMethod": "PIX",
+    "paymentStatus": "PENDING",
+    "createdAt": "2026-08-26T18:00:00"
+  }
+]

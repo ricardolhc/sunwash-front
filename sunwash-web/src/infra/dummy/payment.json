@@ -1,0 +1,34 @@
+[
+  {
+    "id": "pay-sun-001",
+    "appointmentId": "app-sun-001",
+    "amount": 360.0,
+    "method": "CREDIT_CARD",
+    "status": "PAID",
+    "cardLast4": "4242",
+    "cardHolderName": "Ricardo Carvalho",
+    "authorizedAt": "2026-08-20T14:35:00",
+    "paidAt": "2026-08-25T11:45:00"
+  },
+  {
+    "id": "pay-sun-002",
+    "appointmentId": "app-sun-002",
+    "amount": 480.0,
+    "method": "PIX",
+    "status": "PAID",
+    "qrCode": "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020126580014BR.GOV.BCB.PIX0136sunwash-pix-key-1235204000053039865404480.005802BR5907SunWash6009SaoPaulo62070503***6304E2D1",
+    "qrCodeText": "00020126580014BR.GOV.BCB.PIX0136sunwash-pix-key-1235204000053039865404480.005802BR5907SunWash6009SaoPaulo62070503***6304E2D1",
+    "expiresAt": "2026-08-28T15:00:00",
+    "paidAt": "2026-08-22T09:20:00"
+  },
+  {
+    "id": "pay-sun-003",
+    "appointmentId": "app-sun-003",
+    "amount": 300.0,
+    "method": "CREDIT_CARD",
+    "status": "AUTHORIZED",
+    "cardLast4": "8890",
+    "cardHolderName": "Fernanda Souza",
+    "authorizedAt": "2026-08-24T16:25:00"
+  }
+]

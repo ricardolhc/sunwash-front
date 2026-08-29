@@ -1,0 +1,9 @@
+1. Contexto: Otimização de Busca
+⚡ Frontend: Implementar Debounce na busca por cliente
+Título: Adicionar debounce no input de pesquisa de clientes
+
+Descrição: Atualmente, a barra de pesquisa de clientes dispara uma requisição HTTP para a API a cada tecla digitada (onKeyUp/onChange). Isso sobrecarrega o backend com requisições desnecessárias e pode causar corrida de dados (race conditions), onde uma requisição mais antiga sobrescreve o resultado da mais recente.
+
+Comportamento Atual: Digitar "Lucas" gera 5 requisições instantâneas (L, Lu, Luc, Luca, Lucas).
+
+Comportamento Esperado: Deve ser implementado um delay (debounce) de aproximadamente 300ms a 500ms. A requisição só deve ser enviada após o usuário parar de digitar durante esse intervalo. (Sugestão: usar um hook customizado useDebounce ou a função debounce do Lodash).

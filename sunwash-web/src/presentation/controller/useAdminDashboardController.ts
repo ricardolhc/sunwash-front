@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDependencies } from '../context/useDependencies';
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
 import { appointmentStatusLabel } from '../../domain/appointmentStatus';
 import type { AppointmentListMeta } from '../../application/gateway/AppointmentGateway';
+import { useDebounce } from '../../shared/hooks/useDebounce';
 
 const DEFAULT_ITEMS_PER_PAGE = 10;
+const CLIENT_FILTER_DEBOUNCE_MS = 400;
 
 const buildEmptyMeta = (currentPage: number, itemsPerPage: number): AppointmentListMeta => ({
   totalItems: 0,
@@ -36,15 +38,28 @@ export const useAdminDashboardController = () => {
 
   // Filtros e paginação
   const [clientFilter, setClientFilterState] = useState('');
+  const [appliedClientFilter, setAppliedClientFilter] = useState('');
   const [addressFilter, setAddressFilterState] = useState('');
   const [startDateFilter, setStartDateFilterState] = useState('');
   const [endDateFilter, setEndDateFilterState] = useState('');
   const [statusFilter, setStatusFilterState] = useState<'ALL' | AppointmentStatus>('ALL');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPageState] = useState(DEFAULT_ITEMS_PER_PAGE);
+  const debouncedClientFilter = useDebounce(clientFilter, CLIENT_FILTER_DEBOUNCE_MS);
+
+  useEffect(() => {
+    const nextClientFilter = clientFilter.trim() ? debouncedClientFilter : clientFilter;
+
+    if (nextClientFilter === appliedClientFilter) {
+      return;
+    }
+
+    setAppliedClientFilter(nextClientFilter);
+    setCurrentPage(1);
+  }, [appliedClientFilter, clientFilter, debouncedClientFilter]);
 
   const filters = {
-    client: clientFilter.trim() || undefined,
+    client: appliedClientFilter.trim() || undefined,
     address: addressFilter.trim() || undefined,
     startDate: startDateFilter || undefined,
     endDate: endDateFilter || undefined,
@@ -149,7 +164,6 @@ export const useAdminDashboardController = () => {
 
   const setClientFilter = (value: string) => {
     setClientFilterState(value);
-    setCurrentPage(1);
   };
 
   const setAddressFilter = (value: string) => {
@@ -179,6 +193,7 @@ export const useAdminDashboardController = () => {
 
   const clearFilters = () => {
     setClientFilterState('');
+    setAppliedClientFilter('');
     setAddressFilterState('');
     setStartDateFilterState('');
     setEndDateFilterState('');

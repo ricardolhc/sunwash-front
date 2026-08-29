@@ -10,6 +10,9 @@ const loginSchema = z.object({
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
 
+const INVALID_CREDENTIALS_MESSAGE = 'Email ou senha inválidos';
+const GENERIC_LOGIN_ERROR_MESSAGE = 'Não foi possível entrar agora.';
+
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
 const getFromLocation = (state: unknown): Location | string | null => {
@@ -17,6 +20,15 @@ const getFromLocation = (state: unknown): Location | string | null => {
   if (!('from' in state)) return null;
   return (state as { from?: Location | string | null }).from ?? null;
 };
+
+const isUnauthorizedError = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object' || !('response' in error)) return false;
+  return (error as { response?: { status?: number } }).response?.status === 401;
+};
+
+const getLoginErrorMessage = (error: unknown): string => (
+  isUnauthorizedError(error) ? INVALID_CREDENTIALS_MESSAGE : GENERIC_LOGIN_ERROR_MESSAGE
+);
 
 export const useLoginController = () => {
   const auth = useAuth();
@@ -54,7 +66,7 @@ export const useLoginController = () => {
       const result = await auth.login(parsed.data);
       navigate(getPostAuthRoute(result.user, getFromLocation(location.state)), { replace: true });
     } catch (error) {
-      setRootError(error instanceof Error ? error.message : 'Não foi possível entrar agora.');
+      setRootError(getLoginErrorMessage(error));
     }
   });
 

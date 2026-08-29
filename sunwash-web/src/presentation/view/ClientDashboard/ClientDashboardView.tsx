@@ -318,7 +318,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({
                     <div>
                       <span className="text-slate-400 font-semibold block">Garantia & Suporte:</span>
                       <span className="font-bold text-slate-800 block mt-0.5">
-                        SunWash Care (30 dias)
+                        Tw Energia Solar (30 dias)
                       </span>
                       <span className="text-slate-500 block">
                         WhatsApp: (11) 98765-4321

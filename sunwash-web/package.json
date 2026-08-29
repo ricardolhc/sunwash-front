@@ -1,5 +1,5 @@
 {
-  "name": "sunwash-web",
+  "name": "tw-energia-solar-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "tsc:check": "tsc --noEmit",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:unit": "jest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

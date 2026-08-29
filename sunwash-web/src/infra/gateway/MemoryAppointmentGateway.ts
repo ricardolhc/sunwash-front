@@ -22,7 +22,7 @@ export class MemoryAppointmentGateway implements AppointmentGateway {
   async create(input: CreateAppointmentInput): Promise<Appointment> {
     const price = calculateServicePrice(input.panelsCount);
     const newAppointment: Appointment = {
-      id: `app-sun-${Date.now().toString().slice(-6)}`,
+      id: `app-tw-${Date.now().toString().slice(-6)}`,
       userId: input.userId || 'user-client-01',
       clientName: input.clientName,
       clientEmail: input.clientEmail,

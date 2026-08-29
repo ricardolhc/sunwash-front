@@ -10,7 +10,7 @@ export class MemoryPaymentGateway implements PaymentGateway {
   private payments: Payment[] = [...mockPaymentList];
 
   async generatePix(input: GeneratePixPaymentInput): Promise<Payment> {
-    const pixCode = `00020126580014BR.GOV.BCB.PIX0136sunwash-pix-${input.appointmentId}5204000053039865404${input.amount.toFixed(2)}5802BR5907SunWash6009Campinas62070503***6304`;
+    const pixCode = `00020126580014BR.GOV.BCB.PIX0136tw-energia-solar-pix-${input.appointmentId}5204000053039865404${input.amount.toFixed(2)}5802BR5915TwEnergiaSolar6009Campinas62070503***6304`;
     const newPayment: Payment = {
       id: `pay-pix-${Date.now().toString().slice(-6)}`,
       appointmentId: input.appointmentId,

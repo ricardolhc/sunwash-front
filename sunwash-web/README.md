@@ -1,10 +1,10 @@
-# SunWash Web
+# Tw Energia Solar Web
 
-Frontend React/Vite do ecossistema SunWash. Esta versão documenta o fluxo atualizado do `Painel de Operações Técnicas`, a nova paginação do endpoint `/appointments` e a revisão de terminologia comercial para `Manutenção Preventiva`.
+Frontend React/Vite do ecossistema Tw Energia Solar. Esta versão documenta o fluxo atualizado do `Painel de Operações Técnicas`, a nova paginação do endpoint `/appointments` e a revisão de terminologia comercial para `Manutenção Preventiva`.
 
 ## Execução local
 
-1. Inicie o backend `sunwash-back/back` com PostgreSQL configurado.
+1. Inicie o backend da Tw Energia Solar com PostgreSQL configurado.
 2. Preencha no backend as variáveis `STRIPE_SECRET_KEY`, `MERCADO_PAGO_ACCESS_TOKEN`, `ADMIN_API_TOKEN`, `AWS_S3_BUCKET`, `AWS_S3_REGION`, `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`.
 3. Copie `.env-template` para `.env`.
 4. Configure no frontend `VITE_STRIPE_PUBLIC_KEY` e `VITE_ADMIN_API_TOKEN`.
@@ -63,7 +63,7 @@ O `AppointmentGateway.listAll` agora trabalha com resposta paginada:
 {
   "data": [
     {
-      "id": "app-sun-001",
+      "id": "app-tw-001",
       "clientName": "Ricardo Carvalho"
     }
   ],

@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
                 <Sparkles className="w-2.5 h-2.5 text-white -ml-0.5" />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-white">
-                Sun<span className="text-cyan-400">Wash</span>
+                Tw Energia Solar
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
@@ -94,7 +94,7 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span>contato@sunwash.com.br</span>
+                <span>contato@twenergiasolar.com.br</span>
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -105,7 +105,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} SunWash - Todos os direitos reservados. Manutenção preventiva para placas solares.</p>
+          <p>© {new Date().getFullYear()} Tw Energia Solar - Todos os direitos reservados. Manutenção preventiva para placas solares.</p>
         </div>
       </div>
     </footer>

@@ -96,7 +96,7 @@ export const LandingPageView: React.FC = () => {
                       beforeImage="https://grupoe4.com.br/wp-content/uploads/2023/08/limpeza-de-painel.png"
                       afterImage="https://www.bv.com.br/documents/d/bv-inspira/limpar-painel-solar-jpg"
                       beforeLabel="Antes (Sujo)"
-                      afterLabel="Depois (SunWash Care)"
+                      afterLabel="Depois (Tw Energia Solar)"
                     />
                     <div className="p-3 text-center">
                       <p className="text-xs font-medium text-slate-500">
@@ -122,7 +122,7 @@ export const LandingPageView: React.FC = () => {
                 Processo Simples & Transparente
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-3">
-                Como Funciona a SunWash
+                Como Funciona a Tw Energia Solar
               </h2>
               <p className="text-base sm:text-lg text-slate-500 mt-3">
                 Cuidamos de tudo para você ter tranquilidade e o máximo retorno

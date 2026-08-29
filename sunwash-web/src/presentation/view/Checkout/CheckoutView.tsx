@@ -191,7 +191,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                           <input
                             type="text"
                             readOnly
-                            value={pixPayment?.qrCodeText || '00020126580014BR.GOV.BCB.PIX0136sunwash-demo-pix-code...'}
+                            value={pixPayment?.qrCodeText || '00020126580014BR.GOV.BCB.PIX0136tw-energia-solar-demo-pix-code...'}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-600 focus:outline-none select-all"
                           />
                           <button
@@ -378,7 +378,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="text-xs leading-relaxed">
-                  <span className="font-bold block text-cyan-950">Garantia SunWash 100% Segura</span>
+                  <span className="font-bold block text-cyan-950">Garantia Tw Energia Solar 100% Segura</span>
                   Você só paga ou tem o valor debitado após a conclusão técnica do serviço.
                 </div>
               </div>

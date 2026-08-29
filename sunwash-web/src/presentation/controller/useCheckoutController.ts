@@ -36,7 +36,7 @@ export const useCheckoutController = () => {
     cvv: '',
   });
 
-  const appointmentId = localStorage.getItem(STORAGE_KEYS.CURRENT_APPOINTMENT_ID) || 'app-sun-001';
+  const appointmentId = localStorage.getItem(STORAGE_KEYS.CURRENT_APPOINTMENT_ID) || 'app-tw-001';
 
   useEffect(() => {
     if (paymentMethod !== 'CREDIT_CARD' || !cardElementContainerRef.current) return;

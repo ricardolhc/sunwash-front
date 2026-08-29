@@ -76,8 +76,8 @@ describe('useAdminDashboardController', () => {
       expect(controller?.pagination.itemsPerPage).toBe(2);
       expect(controller?.pagination.totalPages).toBe(2);
       expect(controller?.appointments.map((appointment) => appointment.id)).toEqual([
-        'app-sun-001',
-        'app-sun-002',
+        'app-tw-001',
+        'app-tw-002',
       ]);
     });
 
@@ -88,8 +88,8 @@ describe('useAdminDashboardController', () => {
     await waitFor(() => {
       expect(controller?.pagination.currentPage).toBe(2);
       expect(controller?.appointments.map((appointment) => appointment.id)).toEqual([
-        'app-sun-003',
-        'app-sun-004',
+        'app-tw-003',
+        'app-tw-004',
       ]);
     });
 
@@ -100,7 +100,7 @@ describe('useAdminDashboardController', () => {
     await waitFor(() => {
       expect(controller?.pagination.currentPage).toBe(1);
       expect(controller?.pagination.totalItems).toBe(1);
-      expect(controller?.appointments.map((appointment) => appointment.id)).toEqual(['app-sun-002']);
+      expect(controller?.appointments.map((appointment) => appointment.id)).toEqual(['app-tw-002']);
     });
 
     await act(async () => {

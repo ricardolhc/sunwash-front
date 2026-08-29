@@ -30,11 +30,11 @@ export class HttpPaymentGateway implements PaymentGateway {
     const response = await api.post<PixCheckoutResponse>('/payments/checkout/pix', {
       appointmentId: numericId(input.appointmentId),
       amount: input.amount,
-      description: `Manutencao Preventiva SunWash - ${input.appointmentId}`,
+      description: `Manutencao Preventiva Tw Energia Solar - ${input.appointmentId}`,
     });
     const data = response.data;
     return {
-      id: `pay-sun-${String(data.paymentId).padStart(3, '0')}`,
+      id: `pay-tw-${String(data.paymentId).padStart(3, '0')}`,
       appointmentId: input.appointmentId,
       amount: data.amount,
       method: 'PIX',
@@ -50,10 +50,10 @@ export class HttpPaymentGateway implements PaymentGateway {
     const response = await api.post<CardCheckoutResponse>('/payments/checkout/card', {
       appointmentId: numericId(input.appointmentId),
       amount: input.amount,
-      description: `Caucao SunWash - ${input.appointmentId}`,
+      description: `Caucao Tw Energia Solar - ${input.appointmentId}`,
     });
     return {
-      id: `pay-sun-${String(response.data.paymentId).padStart(3, '0')}`,
+      id: `pay-tw-${String(response.data.paymentId).padStart(3, '0')}`,
       appointmentId: input.appointmentId,
       amount: response.data.amount,
       method: 'CREDIT_CARD',
@@ -92,7 +92,7 @@ export class HttpPaymentGateway implements PaymentGateway {
     );
     return {
       id: paymentId,
-      appointmentId: `app-sun-${String(response.data.appointmentId).padStart(3, '0')}`,
+      appointmentId: `app-tw-${String(response.data.appointmentId).padStart(3, '0')}`,
       amount: response.data.amount,
       method: 'CREDIT_CARD',
       status: 'PAID',

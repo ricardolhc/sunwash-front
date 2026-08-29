@@ -14,6 +14,7 @@ export const Navbar: React.FC = () => {
   const isAnonymous = !isAuthenticated;
   const showClientPanel = user?.role === 'USER';
   const showAdminPanel = user?.role === 'ADMIN';
+  const showScheduleLink = user?.role !== 'ADMIN';
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-100 shadow-xs">
@@ -27,7 +28,7 @@ export const Navbar: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-xl tracking-tight text-slate-900 leading-none">
-                Sun<span className="text-cyan-600">Wash</span>
+                Tw Energia Solar
               </span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">
                 Manutenção Solar & Drone
@@ -47,17 +48,19 @@ export const Navbar: React.FC = () => {
             >
               Início
             </Link>
-            <Link
-              to={ROUTES.SCHEDULE}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
-                isActive(ROUTES.SCHEDULE)
-                  ? 'text-cyan-700 bg-cyan-50 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <Calendar className="w-4 h-4 text-cyan-600" />
-              Agendar Manutenção
-            </Link>
+            {showScheduleLink && (
+              <Link
+                to={ROUTES.SCHEDULE}
+                className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                  isActive(ROUTES.SCHEDULE)
+                    ? 'text-cyan-700 bg-cyan-50 font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <Calendar className="w-4 h-4 text-cyan-600" />
+                Agendar Manutenção
+              </Link>
+            )}
             {showClientPanel && (
               <Link
                 to={ROUTES.PANEL}
@@ -138,13 +141,15 @@ export const Navbar: React.FC = () => {
           >
             Início
           </Link>
-          <Link
-            to={ROUTES.SCHEDULE}
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
-          >
-            Agendar Manutenção
-          </Link>
+          {showScheduleLink && (
+            <Link
+              to={ROUTES.SCHEDULE}
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
+            >
+              Agendar Manutenção
+            </Link>
+          )}
           {showClientPanel && (
             <Link
               to={ROUTES.PANEL}

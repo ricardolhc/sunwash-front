@@ -14,7 +14,7 @@ describe('MemoryAppointmentGateway.listAll', () => {
       limit: 10,
     });
 
-    expect(result.data.map((appointment) => appointment.id)).toEqual(['app-sun-002']);
+    expect(result.data.map((appointment) => appointment.id)).toEqual(['app-tw-002']);
     expect(result.meta).toEqual({
       totalItems: 1,
       itemCount: 1,
@@ -32,7 +32,7 @@ describe('MemoryAppointmentGateway.listAll', () => {
       limit: 2,
     });
 
-    expect(result.data.map((appointment) => appointment.id)).toEqual(['app-sun-003', 'app-sun-004']);
+    expect(result.data.map((appointment) => appointment.id)).toEqual(['app-tw-003', 'app-tw-004']);
     expect(result.meta).toEqual({
       totalItems: 4,
       itemCount: 2,

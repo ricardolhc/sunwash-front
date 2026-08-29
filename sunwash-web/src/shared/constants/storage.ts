@@ -1,5 +1,5 @@
 export const STORAGE_KEYS = {
-  CURRENT_APPOINTMENT_ID: '@sunwash:current_appointment_id',
-  USER_SESSION: '@sunwash:user_session',
-  ADMIN_AUTH: '@sunwash:admin_auth',
+  CURRENT_APPOINTMENT_ID: '@tw-energia-solar:current_appointment_id',
+  USER_SESSION: '@tw-energia-solar:user_session',
+  ADMIN_AUTH: '@tw-energia-solar:admin_auth',
 } as const;

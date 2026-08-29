@@ -1,5 +1,10 @@
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
-import type { AppointmentGateway, CreateAppointmentInput } from '../../application/gateway/AppointmentGateway';
+import type {
+  AppointmentGateway,
+  AppointmentListFilters,
+  AppointmentListResult,
+  CreateAppointmentInput,
+} from '../../application/gateway/AppointmentGateway';
 import { api, isNotFound, numericId } from '../http/api';
 
 export class HttpAppointmentGateway implements AppointmentGateway {
@@ -35,8 +40,10 @@ export class HttpAppointmentGateway implements AppointmentGateway {
     return response.data;
   }
 
-  async listAll(): Promise<Appointment[]> {
-    const response = await api.get<Appointment[]>('/appointments');
+  async listAll(filters?: AppointmentListFilters): Promise<AppointmentListResult> {
+    const response = await api.get<AppointmentListResult>('/appointments', {
+      params: filters,
+    });
     return response.data;
   }
 

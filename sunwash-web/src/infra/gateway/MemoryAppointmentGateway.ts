@@ -1,7 +1,20 @@
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
-import type { AppointmentGateway, CreateAppointmentInput } from '../../application/gateway/AppointmentGateway';
+import type {
+  AppointmentGateway,
+  AppointmentListFilters,
+  AppointmentListResult,
+  CreateAppointmentInput,
+} from '../../application/gateway/AppointmentGateway';
 import { mockAppointmentList } from '../../fixture/appointmentFixture';
 import { calculateServicePrice } from '../../shared/constants/pricing';
+
+const normalize = (value: string | undefined): string => value?.trim().toLocaleLowerCase() ?? '';
+
+const matchesSearch = (value: string | undefined, haystack: string): boolean => {
+  const normalizedValue = normalize(value);
+  if (!normalizedValue) return true;
+  return haystack.toLocaleLowerCase().includes(normalizedValue);
+};
 
 export class MemoryAppointmentGateway implements AppointmentGateway {
   private appointments: Appointment[] = [...mockAppointmentList];
@@ -36,8 +49,54 @@ export class MemoryAppointmentGateway implements AppointmentGateway {
     return this.appointments.filter((a) => a.userId === userId);
   }
 
-  async listAll(): Promise<Appointment[]> {
-    return [...this.appointments];
+  async listAll(filters: AppointmentListFilters = {}): Promise<AppointmentListResult> {
+    const page = Math.max(1, filters.page ?? 1);
+    const limit = Math.max(1, filters.limit ?? 10);
+
+    const filtered = this.appointments.filter((appointment) => {
+      const clientHaystack = [
+        appointment.clientName,
+        appointment.clientEmail,
+        appointment.clientPhone,
+      ].join(' ');
+      const addressHaystack = [
+        appointment.address.street,
+        appointment.address.number,
+        appointment.address.neighborhood,
+        appointment.address.city,
+        appointment.address.state,
+        appointment.address.zipCode,
+        appointment.address.complement,
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const appointmentDate = appointment.dateTime.slice(0, 10);
+
+      if (!matchesSearch(filters.client, clientHaystack)) return false;
+      if (!matchesSearch(filters.address, addressHaystack)) return false;
+      if (filters.status && appointment.status !== filters.status) return false;
+      if (filters.startDate && appointmentDate < filters.startDate) return false;
+      if (filters.endDate && appointmentDate > filters.endDate) return false;
+
+      return true;
+    });
+
+    const totalItems = filtered.length;
+    const totalPages = totalItems === 0 ? 1 : Math.ceil(totalItems / limit);
+    const safePage = Math.min(page, totalPages);
+    const startIndex = (safePage - 1) * limit;
+    const data = filtered.slice(startIndex, startIndex + limit);
+
+    return {
+      data: [...data],
+      meta: {
+        totalItems,
+        itemCount: data.length,
+        itemsPerPage: limit,
+        totalPages,
+        currentPage: safePage,
+      },
+    };
   }
 
   async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {

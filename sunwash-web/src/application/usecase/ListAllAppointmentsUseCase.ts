@@ -1,5 +1,8 @@
-import type { Appointment } from '../../domain/Appointment';
-import type { AppointmentGateway } from '../gateway/AppointmentGateway';
+import type {
+  AppointmentGateway,
+  AppointmentListFilters,
+  AppointmentListResult,
+} from '../gateway/AppointmentGateway';
 
 export class ListAllAppointmentsUseCase {
   private appointmentGateway: AppointmentGateway;
@@ -8,7 +11,7 @@ export class ListAllAppointmentsUseCase {
     this.appointmentGateway = appointmentGateway;
   }
 
-  async execute(): Promise<Appointment[]> {
-    return this.appointmentGateway.listAll();
+  async execute(filters?: AppointmentListFilters): Promise<AppointmentListResult> {
+    return this.appointmentGateway.listAll(filters);
   }
 }

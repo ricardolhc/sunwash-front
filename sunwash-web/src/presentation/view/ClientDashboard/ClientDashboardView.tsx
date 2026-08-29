@@ -161,7 +161,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({
                   Dica de Manutenção
                 </div>
                 <p className="text-xs text-amber-50 leading-relaxed">
-                  A limpeza semestral previne microfissuras e garante até 30% a mais na geração de créditos de energia solar na sua conta de luz.
+                  A manutenção preventiva semestral com higienização técnica ajuda a evitar microfissuras e pode recuperar até 30% da eficiência energética do sistema.
                 </p>
               </div>
             </div>
@@ -256,7 +256,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({
                             Laudo Visual & Fotos do Drone (4K)
                           </h3>
                           <p className="text-xs text-slate-500">
-                            Inspeção de conformidade e antes/depois da limpeza
+                            Inspeção de conformidade e comparativo antes/depois da manutenção preventiva
                           </p>
                         </div>
                       </div>
@@ -275,7 +275,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({
                           beforeImage={activeAppointment.droneBeforePhotoUrl}
                           afterImage={activeAppointment.droneAfterPhotoUrl}
                           beforeLabel="Antes (Vistoria Drone)"
-                          afterLabel="Depois (Higienizado)"
+                          afterLabel="Depois (Manutenção Concluída)"
                         />
                         <div className="flex items-center justify-between text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100">
                           <span>💡 Deslize a alça central para comparar os detalhes da placa solar.</span>

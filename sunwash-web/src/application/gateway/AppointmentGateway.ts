@@ -12,11 +12,34 @@ export interface CreateAppointmentInput {
   notes?: string;
 }
 
+export interface AppointmentListFilters {
+  client?: string;
+  address?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: AppointmentStatus;
+  page?: number;
+  limit?: number;
+}
+
+export interface AppointmentListMeta {
+  totalItems: number;
+  itemCount: number;
+  itemsPerPage: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export interface AppointmentListResult {
+  data: Appointment[];
+  meta: AppointmentListMeta;
+}
+
 export interface AppointmentGateway {
   create(input: CreateAppointmentInput): Promise<Appointment>;
   findById(id: string): Promise<Appointment | null>;
   listByUser(userId: string): Promise<Appointment[]>;
-  listAll(): Promise<Appointment[]>;
+  listAll(filters?: AppointmentListFilters): Promise<AppointmentListResult>;
   updateStatus(id: string, status: AppointmentStatus): Promise<Appointment>;
   uploadDronePhotos(id: string, droneBeforePhotoUrl: string, droneAfterPhotoUrl: string): Promise<Appointment>;
 }

@@ -74,7 +74,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
               Passo 1 de 2 • Solicitação de Agendamento
             </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-2">
-              Agende a Limpeza das suas Placas Solares
+              Agende a Manutenção Preventiva das suas Placas Solares
             </h1>
             <p className="text-slate-500 text-sm sm:text-base mt-2 max-w-xl mx-auto">
               Preencha os dados abaixo para calcularmos o orçamento e reservarmos a equipe técnica com drone.
@@ -383,7 +383,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                   {formatCurrency(estimatedPrice)}
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Inclui higienização técnica + inspeção aérea de drone antes e depois.
+                  Inclui manutenção preventiva, higienização técnica e inspeção aérea de drone.
                 </p>
               </div>
 

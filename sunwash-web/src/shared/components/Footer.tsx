@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Especialistas em higienização técnica e aumento de eficiência para usinas e sistemas solares residenciais e comerciais com vistoria aérea por drone.
+              Especialistas em manutenção preventiva e higienização técnica para usinas e sistemas solares residenciais e comerciais com vistoria aérea por drone.
             </p>
             <div className="flex items-center gap-3 text-xs text-slate-500 pt-2">
               <span className="inline-flex items-center gap-1 text-emerald-400">
@@ -45,7 +45,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to={ROUTES.SCHEDULE} className="hover:text-cyan-400 transition-colors">
-                  Agendar Limpeza
+                  Agendar Manutenção
                 </Link>
               </li>
               <li>
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
           {/* Coluna 3: Benefícios */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Por que limpar?
+              Por que fazer manutenção?
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} SunWash - Todos os direitos reservados. Limpeza profissional de placas solares.</p>
+          <p>© {new Date().getFullYear()} SunWash - Todos os direitos reservados. Manutenção preventiva para placas solares.</p>
         </div>
       </div>
     </footer>

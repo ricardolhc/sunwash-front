@@ -31,7 +31,7 @@ export const useClientDashboardController = () => {
       { id: 'PENDING', label: appointmentStatusLabel('PENDING'), description: 'Aguardando confirmação e agendamento' },
       { id: 'CONFIRMED', label: appointmentStatusLabel('CONFIRMED'), description: 'Técnico e horário alocados' },
       { id: 'IN_PROGRESS', label: appointmentStatusLabel('IN_PROGRESS'), description: 'Equipe no local / Vistoria drone' },
-      { id: 'COMPLETED', label: appointmentStatusLabel('COMPLETED'), description: 'Limpeza e relatório finalizados' },
+      { id: 'COMPLETED', label: appointmentStatusLabel('COMPLETED'), description: 'Manutenção preventiva e relatório finalizados' },
     ];
 
     const statusOrder: Record<AppointmentStatus, number> = {

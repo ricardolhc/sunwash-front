@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
                 Sun<span className="text-cyan-600">Wash</span>
               </span>
               <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500">
-                Limpeza Solar & Drone
+                Manutenção Solar & Drone
               </span>
             </div>
           </Link>
@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
               }`}
             >
               <Calendar className="w-4 h-4 text-cyan-600" />
-              Agendar Limpeza
+              Agendar Manutenção
             </Link>
             {showClientPanel && (
               <Link
@@ -143,7 +143,7 @@ export const Navbar: React.FC = () => {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
           >
-            Agendar Limpeza
+            Agendar Manutenção
           </Link>
           {showClientPanel && (
             <Link

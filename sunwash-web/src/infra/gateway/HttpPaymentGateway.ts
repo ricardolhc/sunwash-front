@@ -30,7 +30,7 @@ export class HttpPaymentGateway implements PaymentGateway {
     const response = await api.post<PixCheckoutResponse>('/payments/checkout/pix', {
       appointmentId: numericId(input.appointmentId),
       amount: input.amount,
-      description: `Limpeza SunWash - ${input.appointmentId}`,
+      description: `Manutencao Preventiva SunWash - ${input.appointmentId}`,
     });
     const data = response.data;
     return {

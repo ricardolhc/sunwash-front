@@ -1,5 +1,9 @@
 import { CreateAppointmentUseCase } from './CreateAppointmentUseCase';
-import type { AppointmentGateway, CreateAppointmentInput } from '../gateway/AppointmentGateway';
+import type {
+  AppointmentGateway,
+  AppointmentListResult,
+  CreateAppointmentInput,
+} from '../gateway/AppointmentGateway';
 import type { Appointment } from '../../domain/Appointment';
 
 const validInput: CreateAppointmentInput = {
@@ -44,8 +48,17 @@ class AppointmentGatewayStub implements AppointmentGateway {
     return [];
   }
 
-  async listAll(): Promise<Appointment[]> {
-    return [];
+  async listAll(): Promise<AppointmentListResult> {
+    return {
+      data: [],
+      meta: {
+        totalItems: 0,
+        itemCount: 0,
+        itemsPerPage: 10,
+        totalPages: 1,
+        currentPage: 1,
+      },
+    };
   }
 
   async updateStatus(): Promise<Appointment> {

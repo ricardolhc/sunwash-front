@@ -34,8 +34,8 @@ export const LandingPageView: React.FC = () => {
 
                 <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
                   Poeira e poluição bloqueiam a luz solar e reduzem sua
-                  economia. Nós cuidamos da higienização técnica com água pura e
-                  entregamos um laudo com{" "}
+                  economia. Nós executamos a manutenção preventiva e
+                  higienização técnica com água pura e entregamos um laudo com{" "}
                   <strong>fotos em alta resolução feitas por Drone</strong>.
                 </p>
 
@@ -46,7 +46,7 @@ export const LandingPageView: React.FC = () => {
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl text-base font-bold text-white bg-cyan-600 hover:bg-cyan-700 shadow-lg shadow-cyan-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Calendar className="w-5 h-5" />
-                    Agendar Limpeza Agora
+                    Agendar Manutenção Preventiva
                     <ArrowRight className="w-4 h-4" />
                   </Link>
 
@@ -96,12 +96,12 @@ export const LandingPageView: React.FC = () => {
                       beforeImage="https://grupoe4.com.br/wp-content/uploads/2023/08/limpeza-de-painel.png"
                       afterImage="https://www.bv.com.br/documents/d/bv-inspira/limpar-painel-solar-jpg"
                       beforeLabel="Antes (Sujo)"
-                      afterLabel="Depois (SunWash)"
+                      afterLabel="Depois (SunWash Care)"
                     />
                     <div className="p-3 text-center">
                       <p className="text-xs font-medium text-slate-500">
                         Arraste a barra para comparar o Antes e Depois da
-                        higienização com Drone.
+                        manutenção preventiva com apoio de drone.
                       </p>
                     </div>
                   </div>
@@ -151,7 +151,7 @@ export const LandingPageView: React.FC = () => {
                   2
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">
-                  Limpeza Especializada
+                  Manutenção Preventiva e Higienização
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   Nossos técnicos certificados utilizam escovas rotativas
@@ -170,7 +170,7 @@ export const LandingPageView: React.FC = () => {
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   Receba no seu painel as fotos aéreas de drone comprovando a
-                  limpeza impecável e a recuperação da geração de energia.
+                  higienização técnica e a recuperação da geração de energia.
                 </p>
               </div>
             </div>
@@ -185,7 +185,7 @@ export const LandingPageView: React.FC = () => {
                 Quem usa aprova
               </span>
               <h2 className="text-3xl font-extrabold text-slate-900 mt-3">
-                Mais de 1.200 Sistemas Solares Limpos
+                Mais de 1.200 Sistemas com Manutenção Preventiva
               </h2>
             </div>
 
@@ -198,8 +198,8 @@ export const LandingPageView: React.FC = () => {
                     ))}
                   </div>
                   <p className="text-sm text-slate-600 italic">
-                    "Minha geração aumentou 28% no primeiro mês após a limpeza.
-                    As fotos do drone que mandaram no painel foram
+                    "Minha geração aumentou 28% no primeiro mês após a
+                    manutenção preventiva. As fotos do drone que mandaram no painel foram
                     impressionantes!"
                   </p>
                 </div>
@@ -283,17 +283,17 @@ export const LandingPageView: React.FC = () => {
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
               Pronto para recuperar a eficiência máxima da sua energia solar?
             </h2>
-            <p className="text-cyan-100 text-base sm:text-lg max-w-2xl mx-auto">
-              Faça sua simulação em segundos e agende a data mais conveniente
-              para a sua visita técnica.
-            </p>
+                <p className="text-cyan-100 text-base sm:text-lg max-w-2xl mx-auto">
+                  Faça sua simulação em segundos e agende a data mais conveniente
+                  para a sua visita técnica.
+                </p>
             <div className="pt-2">
               <Link
                 to={ROUTES.SCHEDULE}
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold bg-amber-400 text-slate-900 hover:bg-amber-300 shadow-lg shadow-amber-400/20 transition-all hover:scale-105"
               >
                 <Calendar className="w-5 h-5" />
-                Agendar Minha Limpeza
+                Agendar Minha Manutenção
               </Link>
             </div>
           </div>

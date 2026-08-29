@@ -1,8 +1,19 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDependencies } from '../context/useDependencies';
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
 import { appointmentStatusLabel } from '../../domain/appointmentStatus';
+import type { AppointmentListMeta } from '../../application/gateway/AppointmentGateway';
+
+const DEFAULT_ITEMS_PER_PAGE = 10;
+
+const buildEmptyMeta = (currentPage: number, itemsPerPage: number): AppointmentListMeta => ({
+  totalItems: 0,
+  itemCount: 0,
+  itemsPerPage,
+  totalPages: 1,
+  currentPage,
+});
 
 export const useAdminDashboardController = () => {
   const queryClient = useQueryClient();
@@ -23,15 +34,32 @@ export const useAdminDashboardController = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Filtro de status
-  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  // Filtros e paginação
+  const [clientFilter, setClientFilterState] = useState('');
+  const [addressFilter, setAddressFilterState] = useState('');
+  const [startDateFilter, setStartDateFilterState] = useState('');
+  const [endDateFilter, setEndDateFilterState] = useState('');
+  const [statusFilter, setStatusFilterState] = useState<'ALL' | AppointmentStatus>('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPageState] = useState(DEFAULT_ITEMS_PER_PAGE);
+
+  const filters = {
+    client: clientFilter.trim() || undefined,
+    address: addressFilter.trim() || undefined,
+    startDate: startDateFilter || undefined,
+    endDate: endDateFilter || undefined,
+    status: statusFilter === 'ALL' ? undefined : statusFilter,
+    page: currentPage,
+    limit: itemsPerPage,
+  };
 
   // Query de Agendamentos
-  const { data: appointments = [], isLoading, refetch } = useQuery({
-    queryKey: ['admin-appointments'],
+  const { data: appointmentList, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['admin-appointments', filters],
     queryFn: async () => {
-      return listAllAppointmentsUseCase.execute();
+      return listAllAppointmentsUseCase.execute(filters);
     },
+    placeholderData: keepPreviousData,
   });
 
   // Mutation para Atualizar Status
@@ -116,17 +144,74 @@ export const useAdminDashboardController = () => {
     });
   };
 
-  const filteredAppointments = appointments.filter((app) => {
-    if (statusFilter === 'ALL') return true;
-    return app.status === statusFilter;
-  });
+  const appointments = appointmentList?.data ?? [];
+  const pagination = appointmentList?.meta ?? buildEmptyMeta(currentPage, itemsPerPage);
+
+  const setClientFilter = (value: string) => {
+    setClientFilterState(value);
+    setCurrentPage(1);
+  };
+
+  const setAddressFilter = (value: string) => {
+    setAddressFilterState(value);
+    setCurrentPage(1);
+  };
+
+  const setStartDateFilter = (value: string) => {
+    setStartDateFilterState(value);
+    setCurrentPage(1);
+  };
+
+  const setEndDateFilter = (value: string) => {
+    setEndDateFilterState(value);
+    setCurrentPage(1);
+  };
+
+  const setStatusFilter = (value: 'ALL' | AppointmentStatus) => {
+    setStatusFilterState(value);
+    setCurrentPage(1);
+  };
+
+  const setItemsPerPage = (value: number) => {
+    setItemsPerPageState(Math.max(1, value));
+    setCurrentPage(1);
+  };
+
+  const clearFilters = () => {
+    setClientFilterState('');
+    setAddressFilterState('');
+    setStartDateFilterState('');
+    setEndDateFilterState('');
+    setStatusFilterState('ALL');
+    setCurrentPage(1);
+  };
 
   return {
-    appointments: filteredAppointments,
-    allAppointmentsCount: appointments.length,
+    appointments,
+    allAppointmentsCount: pagination.totalItems,
     isLoading,
+    isRefreshing: isFetching && !isLoading,
+    clientFilter,
+    setClientFilter,
+    addressFilter,
+    setAddressFilter,
+    startDateFilter,
+    setStartDateFilter,
+    endDateFilter,
+    setEndDateFilter,
     statusFilter,
     setStatusFilter,
+    clearFilters,
+    pagination: {
+      ...pagination,
+      hasPreviousPage: pagination.currentPage > 1,
+      hasNextPage: pagination.currentPage < pagination.totalPages,
+    },
+    goToPage: (page: number) => {
+      setCurrentPage(Math.max(1, page));
+    },
+    itemsPerPage,
+    setItemsPerPage,
     selectedRoofPhoto,
     setSelectedRoofPhoto,
     droneUploadModalAppointment,

@@ -9,6 +9,10 @@ import {
   X,
   Loader2,
   Check,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  RotateCcw,
 } from 'lucide-react';
 import { Navbar } from '../../../shared/components/Navbar';
 import { Footer } from '../../../shared/components/Footer';
@@ -16,13 +20,45 @@ import { ToastNotification } from '../../../shared/components/ToastNotification'
 import { formatCurrency, formatDateTime } from '../../../shared/utils/formatters';
 import type { Appointment, AppointmentStatus } from '../../../domain/Appointment';
 import { appointmentStatusLabel, appointmentStatuses } from '../../../domain/appointmentStatus';
+import type { AppointmentListMeta } from '../../../application/gateway/AppointmentGateway';
+
+interface PaginationViewModel extends AppointmentListMeta {
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+const buildVisiblePages = (currentPage: number, totalPages: number): number[] => {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, start + 4);
+  const adjustedStart = Math.max(1, end - 4);
+
+  return Array.from({ length: end - adjustedStart + 1 }, (_, index) => adjustedStart + index);
+};
 
 interface AdminDashboardViewProps {
   appointments: Appointment[];
   allAppointmentsCount: number;
   isLoading: boolean;
+  isRefreshing: boolean;
+  clientFilter: string;
+  setClientFilter: (value: string) => void;
+  addressFilter: string;
+  setAddressFilter: (value: string) => void;
+  startDateFilter: string;
+  setStartDateFilter: (value: string) => void;
+  endDateFilter: string;
+  setEndDateFilter: (value: string) => void;
   statusFilter: string;
-  setStatusFilter: (filter: string) => void;
+  setStatusFilter: (filter: 'ALL' | AppointmentStatus) => void;
+  clearFilters: () => void;
+  pagination: PaginationViewModel;
+  goToPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (value: number) => void;
   selectedRoofPhoto: string | null;
   setSelectedRoofPhoto: (url: string | null) => void;
   droneUploadModalAppointment: Appointment | null;
@@ -48,8 +84,22 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   appointments,
   allAppointmentsCount,
   isLoading,
+  isRefreshing,
+  clientFilter,
+  setClientFilter,
+  addressFilter,
+  setAddressFilter,
+  startDateFilter,
+  setStartDateFilter,
+  endDateFilter,
+  setEndDateFilter,
   statusFilter,
   setStatusFilter,
+  clearFilters,
+  pagination,
+  goToPage,
+  itemsPerPage,
+  setItemsPerPage,
   selectedRoofPhoto,
   setSelectedRoofPhoto,
   droneUploadModalAppointment,
@@ -72,6 +122,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const totalRevenue = appointments.reduce((acc, curr) => acc + (curr.price || 0), 0);
   const completedCount = appointments.filter((a) => a.status === 'COMPLETED').length;
   const inProgressCount = appointments.filter((a) => a.status === 'IN_PROGRESS').length;
+  const visiblePages = buildVisiblePages(pagination.currentPage, pagination.totalPages);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
@@ -91,7 +142,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </h1>
               </div>
               <p className="text-slate-500 text-sm mt-1">
-                Gestão de ordens de serviço, upload de laudos de drone e liquidação de cauções.
+                Gestão de ordens de serviço, laudos de drone e liquidação de atendimentos.
               </p>
             </div>
           </div>
@@ -127,27 +178,113 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           {/* FILTROS E TABELA DE CLIENTES */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             {/* Header da Tabela com Filtros */}
-            <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-slate-400" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Filtrar por Status:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {(['ALL', ...appointmentStatuses] as const).map((st) => (
-                    <button
-                      key={st}
-                      type="button"
-                      onClick={() => setStatusFilter(st)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        statusFilter === st
-                          ? 'bg-cyan-600 text-white shadow-xs'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      {st === 'ALL' ? 'Todos' : appointmentStatusLabel(st)}
-                    </button>
-                  ))}
+            <div className="p-5 border-b border-slate-100 space-y-5">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-slate-400" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Filtros operacionais
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-2 self-start rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Limpar filtros
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Cliente
+                  </span>
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={clientFilter}
+                      onChange={(e) => setClientFilter(e.target.value)}
+                      placeholder="Nome, e-mail ou telefone"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:bg-white"
+                    />
+                  </div>
+                </label>
+
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Endereço
+                  </span>
+                  <input
+                    type="text"
+                    value={addressFilter}
+                    onChange={(e) => setAddressFilter(e.target.value)}
+                    placeholder="Rua, bairro, cidade ou CEP"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:bg-white"
+                  />
+                </label>
+
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Data inicial
+                  </span>
+                  <input
+                    type="date"
+                    value={startDateFilter}
+                    onChange={(e) => setStartDateFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:bg-white"
+                  />
+                </label>
+
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Data final
+                  </span>
+                  <input
+                    type="date"
+                    value={endDateFilter}
+                    onChange={(e) => setEndDateFilter(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:bg-white"
+                  />
+                </label>
+              </div>
+
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Status
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(['ALL', ...appointmentStatuses] as const).map((st) => (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => setStatusFilter(st)}
+                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                          statusFilter === st
+                            ? 'bg-cyan-600 text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {st === 'ALL' ? 'Todos' : appointmentStatusLabel(st)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xs text-slate-500">
+                  {isRefreshing ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-50 px-3 py-1 font-semibold text-cyan-700">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Atualizando resultados
+                    </span>
+                  ) : (
+                    <span>
+                      {pagination.totalItems} resultado(s) encontrado(s)
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -160,7 +297,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </div>
             ) : appointments.length === 0 ? (
               <div className="py-16 text-center text-slate-400 text-sm">
-                Nenhum agendamento encontrado para o filtro selecionado.
+                Nenhuma operação encontrada para os filtros selecionados.
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -270,6 +407,67 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 </table>
               </div>
             )}
+
+            <div className="flex flex-col gap-4 border-t border-slate-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="text-xs text-slate-500">
+                Mostrando {pagination.itemCount} de {pagination.totalItems} operação(ões)
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <label className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                  Itens por página
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                    className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  >
+                    {[5, 10, 20, 50].map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={!pagination.hasPreviousPage || isLoading}
+                    onClick={() => goToPage(pagination.currentPage - 1)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    Página anterior
+                  </button>
+
+                  {visiblePages.map((page) => (
+                    <button
+                      key={page}
+                      type="button"
+                      disabled={isLoading}
+                      onClick={() => goToPage(page)}
+                      className={`h-9 min-w-9 rounded-lg border px-3 text-xs font-bold transition ${
+                        page === pagination.currentPage
+                          ? 'border-cyan-600 bg-cyan-600 text-white'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      } disabled:cursor-not-allowed disabled:opacity-50`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    disabled={!pagination.hasNextPage || isLoading}
+                    onClick={() => goToPage(pagination.currentPage + 1)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Próxima página
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -333,7 +531,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             <form onSubmit={handleSaveDronePhotos} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  URL da Foto do Drone (ANTES DA LIMPEZA) *
+                  URL da Foto do Drone (ANTES DA MANUTENÇÃO PREVENTIVA) *
                 </label>
                 <input
                   type="url"
@@ -347,7 +545,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                  URL da Foto do Drone (DEPOIS DA LIMPEZA) *
+                  URL da Foto do Drone (DEPOIS DA MANUTENÇÃO PREVENTIVA E HIGIENIZAÇÃO) *
                 </label>
                 <input
                   type="url"

@@ -1,52 +1,101 @@
 # SunWash Web
 
-Frontend React integrado a API Spring Boot em `sunwash-back/back`.
+Frontend React/Vite do ecossistema SunWash. Esta versão documenta o fluxo atualizado do `Painel de Operações Técnicas`, a nova paginação do endpoint `/appointments` e a revisão de terminologia comercial para `Manutenção Preventiva`.
 
-## Execucao integrada
+## Execução local
 
-1. Inicie PostgreSQL e crie o banco `sunwash`.
-2. Configure no backend: `STRIPE_SECRET_KEY`, `MERCADO_PAGO_ACCESS_TOKEN`,
-   `ADMIN_API_TOKEN`, `AWS_S3_BUCKET`, `AWS_S3_REGION`, `AWS_ACCESS_KEY_ID` e
-   `AWS_SECRET_ACCESS_KEY`.
-3. Execute `mvn spring-boot:run` em `sunwash-back/back`.
-4. Copie `.env-template` para `.env`, preencha `VITE_STRIPE_PUBLIC_KEY` e
-   `VITE_ADMIN_API_TOKEN`, e execute `npm run dev`.
+1. Inicie o backend `sunwash-back/back` com PostgreSQL configurado.
+2. Preencha no backend as variáveis `STRIPE_SECRET_KEY`, `MERCADO_PAGO_ACCESS_TOKEN`, `ADMIN_API_TOKEN`, `AWS_S3_BUCKET`, `AWS_S3_REGION`, `AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`.
+3. Copie `.env-template` para `.env`.
+4. Configure no frontend `VITE_STRIPE_PUBLIC_KEY` e `VITE_ADMIN_API_TOKEN`.
+5. Rode `npm install`.
+6. Rode `npm run dev`.
 
-`VITE_USE_HTTP=true` ativa os gateways reais para agendamento e pagamento.
-`VITE_USE_HTTP_AUTH=true` ativa o login via backend; deixe `false` para usar o
-`DummyAuthGateway` local com usuários de fixture. Em producao, configure
-`FRONTEND_ALLOWED_ORIGINS` no backend. O bucket S3 precisa permitir leitura das
-imagens enviadas (direta ou por CDN).
+## Terminologia da interface
 
-## Base tecnica
+- Textos de venda e descrição de serviço agora usam `Manutenção Preventiva e Higienização` quando o contexto é comercial.
+- Labels curtas, CTAs e trechos operacionais usam `Manutenção Preventiva`.
+- A troca foi aplicada em landing page, formulário de agendamento, painel do cliente, navbar, footer e modais do painel administrativo.
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Painel de Operações Técnicas
 
-Currently, two official plugins are available:
+### Filtros suportados
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O dashboard administrativo passou a enviar filtros diretamente para a API:
 
-## React Compiler
+- `client`
+- `address`
+- `startDate`
+- `endDate`
+- `status`
+- `page`
+- `limit`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Os estados vivem em `src/presentation/controller/useAdminDashboardController.ts` e são reinicializados para `page = 1` sempre que algum filtro ou `limit` muda.
 
-## Expanding the Oxlint configuration
+### Paginação
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+O rodapé da tabela agora oferece:
+
+- botão `Página anterior`
+- botão `Próxima página`
+- paginação numérica
+- seletor `Itens por página`
+
+O frontend usa o `meta` retornado pela API para:
+
+- exibir `totalItems` no resumo
+- habilitar e desabilitar navegação
+- manter `currentPage`, `itemsPerPage` e `totalPages` sincronizados com a consulta atual
+
+### Loading
+
+- `isLoading`: primeira carga da listagem
+- `isRefreshing`: atualização por troca de filtro, status ou paginação
+
+Durante atualizações, a view mostra feedback visual sem perder o contexto dos resultados anteriores.
+
+## Contrato do endpoint `/appointments`
+
+O `AppointmentGateway.listAll` agora trabalha com resposta paginada:
 
 ```json
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  "data": [
+    {
+      "id": "app-sun-001",
+      "clientName": "Ricardo Carvalho"
+    }
+  ],
+  "meta": {
+    "totalItems": 150,
+    "itemCount": 10,
+    "itemsPerPage": 10,
+    "totalPages": 15,
+    "currentPage": 1
   }
 }
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Arquivos principais do contrato:
+
+- `src/application/gateway/AppointmentGateway.ts`
+- `src/application/usecase/ListAllAppointmentsUseCase.ts`
+- `src/infra/gateway/HttpAppointmentGateway.ts`
+- `src/infra/gateway/MemoryAppointmentGateway.ts`
+
+## Estrutura alterada
+
+- `src/presentation/controller/useAdminDashboardController.ts`: estados de filtro, paginação, loading e ações do painel
+- `src/presentation/view/AdminDashboard/AdminDashboardView.tsx`: barra de filtros, tabela, feedback de atualização e paginação
+- `src/presentation/pages/AdminDashboardPage.tsx`: repasse dos novos props do controller
+- `src/infra/gateway/*.test.ts`: cobertura do contrato paginado e do fallback em memória
+- `src/presentation/controller/useAdminDashboardController.test.tsx`: cobertura do reset de página ao filtrar
+
+## Verificação
+
+Comandos usados para validar esta alteração:
+
+- `npx jest src/infra/gateway/HttpAppointmentGateway.test.ts src/infra/gateway/MemoryAppointmentGateway.test.ts src/presentation/controller/useAdminDashboardController.test.tsx --runInBand`
+- `npm run tsc:check`
+- `npm test -- --runInBand`

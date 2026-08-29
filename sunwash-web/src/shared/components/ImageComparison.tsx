@@ -13,7 +13,7 @@ export const ImageComparison: React.FC<ImageComparisonProps> = ({
   beforeImage,
   afterImage,
   beforeLabel = 'Antes (Sujo/Poeira)',
-  afterLabel = 'Depois (Limpeza SunWash)',
+  afterLabel = 'Depois (Manutenção SunWash)',
   className = '',
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);

@@ -1,6 +1,7 @@
 import type { Appointment, AppointmentStatus } from '../../domain/Appointment';
 import type {
   AppointmentGateway,
+  ReportExportFilters,
   AppointmentListFilters,
   AppointmentListResult,
   CreateAppointmentInput,
@@ -97,6 +98,20 @@ export class MemoryAppointmentGateway implements AppointmentGateway {
         currentPage: safePage,
       },
     };
+  }
+
+  async exportReport(filters: ReportExportFilters = {}): Promise<Blob> {
+    const filtered = await this.listAll({
+      ...filters,
+      page: 1,
+      limit: this.appointments.length || 1,
+    });
+    const lines = [
+      'SunWash Report',
+      `total=${filtered.meta.totalItems}`,
+      ...filtered.data.map((appointment) => `${appointment.id};${appointment.clientName};${appointment.status}`),
+    ];
+    return new Blob([lines.join('\n')], { type: 'application/pdf' });
   }
 
   async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {

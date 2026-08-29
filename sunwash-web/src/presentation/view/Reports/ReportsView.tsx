@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '../../../shared/components/Navbar';
 import { Footer } from '../../../shared/components/Footer';
+import { ToastNotification } from '../../../shared/components/ToastNotification';
 import { formatCurrency, formatDateTime } from '../../../shared/utils/formatters';
 import type { Appointment, AppointmentStatus } from '../../../domain/Appointment';
 import { appointmentStatusLabel, appointmentStatuses } from '../../../domain/appointmentStatus';
@@ -33,6 +34,10 @@ interface ReportsViewProps {
   totalRevenue: number;
   completedCount: number;
   inProgressCount: number;
+  isExporting: boolean;
+  exportReport: () => Promise<void>;
+  errorMessage: string | null;
+  clearError: () => void;
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({
@@ -52,6 +57,10 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   totalRevenue,
   completedCount,
   inProgressCount,
+  isExporting,
+  exportReport,
+  errorMessage,
+  clearError,
 }) => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
@@ -69,20 +78,32 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 <div>
                   <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Painel de Relatórios</h1>
                   <p className="mt-2 max-w-xl text-sm leading-relaxed text-cyan-50/85">
-                    Consolide filtros operacionais, acompanhe volume financeiro e exporte a visualização atual em PDF quando a integração estiver pronta.
+                    Consolide filtros operacionais, acompanhe volume financeiro e exporte em PDF a visualização atual com os filtros ativos.
                   </p>
                 </div>
               </div>
 
               <button
                 type="button"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-400/30 transition hover:bg-amber-300"
+                onClick={() => {
+                  void exportReport();
+                }}
+                disabled={isExporting}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-400/30 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:bg-amber-200 disabled:shadow-none"
               >
-                <Download className="h-4 w-4" />
-                Exportar para PDF
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {isExporting ? 'Exportando PDF...' : 'Exportar para PDF'}
               </button>
             </div>
           </section>
+
+          {errorMessage && (
+            <ToastNotification type="error" message={errorMessage} onClose={clearError} />
+          )}
 
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <article className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">

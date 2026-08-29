@@ -22,6 +22,8 @@ export interface AppointmentListFilters {
   limit?: number;
 }
 
+export type ReportExportFilters = Omit<AppointmentListFilters, 'page' | 'limit'>;
+
 export interface AppointmentListMeta {
   totalItems: number;
   itemCount: number;
@@ -40,6 +42,7 @@ export interface AppointmentGateway {
   findById(id: string): Promise<Appointment | null>;
   listByUser(userId: string): Promise<Appointment[]>;
   listAll(filters?: AppointmentListFilters): Promise<AppointmentListResult>;
+  exportReport(filters?: ReportExportFilters): Promise<Blob>;
   updateStatus(id: string, status: AppointmentStatus): Promise<Appointment>;
   uploadDronePhotos(id: string, droneBeforePhotoUrl: string, droneAfterPhotoUrl: string): Promise<Appointment>;
 }

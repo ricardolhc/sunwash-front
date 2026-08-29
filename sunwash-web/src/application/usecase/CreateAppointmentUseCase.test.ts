@@ -1,6 +1,7 @@
 import { CreateAppointmentUseCase } from './CreateAppointmentUseCase';
 import type {
   AppointmentGateway,
+  ReportExportFilters,
   AppointmentListResult,
   CreateAppointmentInput,
 } from '../gateway/AppointmentGateway';
@@ -59,6 +60,10 @@ class AppointmentGatewayStub implements AppointmentGateway {
         currentPage: 1,
       },
     };
+  }
+
+  async exportReport(_filters?: ReportExportFilters): Promise<Blob> {
+    return new Blob(['pdf'], { type: 'application/pdf' });
   }
 
   async updateStatus(): Promise<Appointment> {

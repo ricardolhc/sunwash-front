@@ -33,14 +33,20 @@ const refreshAccessToken = async (): Promise<void> => {
 
 const isAuthRequest = (url: string | undefined): boolean => url?.startsWith('/auth/') ?? false;
 
-const toApiError = (error: AxiosError<{ message?: string; error?: string }>): Error & { status?: number } => {
+const toApiError = (
+  error: AxiosError<{ message?: string; error?: string }>,
+): Error & { status?: number; responseData?: unknown } => {
   if (error instanceof Error && 'status' in error) {
-    return error as Error & { status?: number };
+    return error as Error & { status?: number; responseData?: unknown };
   }
 
   const message = error.response?.data?.message || error.response?.data?.error || error.message;
-  const apiError = new Error(message || 'Nao foi possivel comunicar com a API.') as Error & { status?: number };
+  const apiError = new Error(message || 'Nao foi possivel comunicar com a API.') as Error & {
+    status?: number;
+    responseData?: unknown;
+  };
   apiError.status = error.response?.status;
+  apiError.responseData = error.response?.data;
   return apiError;
 };
 

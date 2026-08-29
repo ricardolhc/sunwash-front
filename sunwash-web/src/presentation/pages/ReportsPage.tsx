@@ -23,6 +23,10 @@ export const ReportsPage: React.FC = () => {
       totalRevenue={controller.totalRevenue}
       completedCount={controller.completedCount}
       inProgressCount={controller.inProgressCount}
+      isExporting={controller.isExporting}
+      exportReport={controller.exportReport}
+      errorMessage={controller.errorMessage}
+      clearError={controller.clearError}
     />
   );
 };

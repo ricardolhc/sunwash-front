@@ -29,7 +29,7 @@ describe('api', () => {
     api.defaults.adapter = undefined;
   });
 
-  test('sends credentials and the in-memory access token on requests', async () => {
+  test('sends only the in-memory access token on protected requests', async () => {
     setAccessToken('session-token');
     const adapter = jest.fn(async (config: InternalAxiosRequestConfig) => ({
       data: {},
@@ -43,17 +43,19 @@ describe('api', () => {
     await api.get('/appointments');
 
     const config = adapter.mock.calls[0][0] as InternalAxiosRequestConfig;
-    expect(config.withCredentials).toBe(true);
+    expect(config.withCredentials).toBeUndefined();
     expect(config.headers.Authorization).toBe('Bearer session-token');
   });
 
-  test('shares one refresh for concurrent unauthorized requests and retries each request once', async () => {
+  test('shares one refresh with cookie credentials for concurrent unauthorized requests and retries each request once', async () => {
     setAccessToken('expired-token');
     let refreshCalls = 0;
+    const refreshCredentials: Array<boolean | undefined> = [];
     const requests = new Map<string, number>();
     api.defaults.adapter = async (config) => {
       if (config.url === '/auth/refresh') {
         refreshCalls += 1;
+        refreshCredentials.push(config.withCredentials);
         return { data: authResult, status: 200, statusText: 'OK', headers: {}, config };
       }
 
@@ -70,6 +72,7 @@ describe('api', () => {
     ]);
 
     expect(refreshCalls).toBe(1);
+    expect(refreshCredentials).toEqual([true]);
     expect(requests.get('/appointments/1')).toBe(2);
     expect(requests.get('/appointments/2')).toBe(2);
     expect(first.data).toEqual({ path: '/appointments/1' });

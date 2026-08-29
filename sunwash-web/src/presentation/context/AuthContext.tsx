@@ -1,11 +1,29 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { AuthGateway, AuthResult, LoginInput, RegisterInput } from '../../application/gateway/AuthGateway';
-import type { User } from '../../domain/User';
-import { DummyAuthGateway } from '../../infra/gateway/DummyAuthGateway';
-import { clearAccessToken, setAccessToken, setSessionExpiredHandler } from '../../infra/http/authToken';
-import { DependencyContext } from './DependencyContext';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import type {
+  AuthGateway,
+  AuthResult,
+  LoginInput,
+  RegisterInput,
+} from "../../application/gateway/AuthGateway";
+import type { User } from "../../domain/User";
+import { DummyAuthGateway } from "../../infra/gateway/DummyAuthGateway";
+import {
+  clearAccessToken,
+  setAccessToken,
+  setSessionExpiredHandler,
+} from "../../infra/http/authToken";
+import { DependencyContext } from "./DependencyContext";
 
-export type AuthStatus = 'loading' | 'authenticated' | 'anonymous';
+export type AuthStatus = "loading" | "authenticated" | "anonymous";
 
 export interface AuthContextValue {
   user: User | null;
@@ -18,7 +36,9 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
-export const restoreAuthSession = async (gateway: AuthGateway): Promise<AuthResult | null> => {
+export const restoreAuthSession = async (
+  gateway: AuthGateway,
+): Promise<AuthResult | null> => {
   try {
     return await gateway.refresh();
   } catch {
@@ -26,7 +46,9 @@ export const restoreAuthSession = async (gateway: AuthGateway): Promise<AuthResu
   }
 };
 
-export const createSessionRestorer = (gateway: AuthGateway): (() => Promise<AuthResult | null>) => {
+export const createSessionRestorer = (
+  gateway: AuthGateway,
+): (() => Promise<AuthResult | null>) => {
   let restoration: Promise<AuthResult | null> | null = null;
 
   return () => {
@@ -44,29 +66,33 @@ export interface AuthProviderProps {
 
 export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
   const dependencies = useContext(DependencyContext);
-  const [gateway] = useState<AuthGateway>(() => authGateway ?? dependencies?.authGateway ?? new DummyAuthGateway());
+  const [gateway] = useState<AuthGateway>(
+    () => authGateway ?? dependencies?.authGateway ?? new DummyAuthGateway(),
+  );
   const restorer = useMemo(() => createSessionRestorer(gateway), [gateway]);
   const sessionGeneration = useRef(0);
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthStatus>('loading');
+  const [status, setStatus] = useState<AuthStatus>("loading");
 
   const startSessionOperation = useCallback((): number => {
     sessionGeneration.current += 1;
     return sessionGeneration.current;
   }, []);
 
-  const isCurrentSessionOperation = useCallback((generation: number): boolean =>
-    sessionGeneration.current === generation, []);
+  const isCurrentSessionOperation = useCallback(
+    (generation: number): boolean => sessionGeneration.current === generation,
+    [],
+  );
 
   const authenticate = useCallback((result: AuthResult): void => {
     setAccessToken(result.accessToken);
     setUser(result.user);
-    setStatus('authenticated');
+    setStatus("authenticated");
   }, []);
 
   const restoreSession = useCallback(async (): Promise<void> => {
     const generation = startSessionOperation();
-    setStatus('loading');
+    setStatus("loading");
     const result = await restorer();
     if (!isCurrentSessionOperation(generation)) return;
 
@@ -76,8 +102,13 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
     }
 
     setUser(null);
-    setStatus('anonymous');
-  }, [authenticate, isCurrentSessionOperation, restorer, startSessionOperation]);
+    setStatus("anonymous");
+  }, [
+    authenticate,
+    isCurrentSessionOperation,
+    restorer,
+    startSessionOperation,
+  ]);
 
   useEffect(() => {
     void restoreSession();
@@ -87,7 +118,7 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
     setSessionExpiredHandler(() => {
       startSessionOperation();
       setUser(null);
-      setStatus('anonymous');
+      setStatus("anonymous");
     });
 
     return () => {
@@ -95,19 +126,25 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
     };
   }, [startSessionOperation]);
 
-  const login = useCallback(async (input: LoginInput): Promise<AuthResult> => {
-    const generation = startSessionOperation();
-    const result = await gateway.login(input);
-    if (isCurrentSessionOperation(generation)) authenticate(result);
-    return result;
-  }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
+  const login = useCallback(
+    async (input: LoginInput): Promise<AuthResult> => {
+      const generation = startSessionOperation();
+      const result = await gateway.login(input);
+      if (isCurrentSessionOperation(generation)) authenticate(result);
+      return result;
+    },
+    [authenticate, gateway, isCurrentSessionOperation, startSessionOperation],
+  );
 
-  const register = useCallback(async (input: RegisterInput): Promise<AuthResult> => {
-    const generation = startSessionOperation();
-    const result = await gateway.register(input);
-    if (isCurrentSessionOperation(generation)) authenticate(result);
-    return result;
-  }, [authenticate, gateway, isCurrentSessionOperation, startSessionOperation]);
+  const register = useCallback(
+    async (input: RegisterInput): Promise<AuthResult> => {
+      const generation = startSessionOperation();
+      const result = await gateway.register(input);
+      if (isCurrentSessionOperation(generation)) authenticate(result);
+      return result;
+    },
+    [authenticate, gateway, isCurrentSessionOperation, startSessionOperation],
+  );
 
   const logout = useCallback(async (): Promise<void> => {
     const generation = startSessionOperation();
@@ -117,19 +154,22 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
       if (isCurrentSessionOperation(generation)) {
         clearAccessToken();
         setUser(null);
-        setStatus('anonymous');
+        setStatus("anonymous");
       }
     }
   }, [gateway, isCurrentSessionOperation, startSessionOperation]);
 
-  const value = useMemo<AuthContextValue>(() => ({
-    user,
-    status,
-    login,
-    register,
-    logout,
-    restoreSession,
-  }), [login, logout, register, restoreSession, status, user]);
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      status,
+      login,
+      register,
+      logout,
+      restoreSession,
+    }),
+    [login, logout, register, restoreSession, status, user],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
@@ -137,7 +177,7 @@ export const AuthProvider = ({ children, authGateway }: AuthProviderProps) => {
 export const useAuthContext = (): AuthContextValue => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

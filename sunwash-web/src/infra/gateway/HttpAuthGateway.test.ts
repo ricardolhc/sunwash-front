@@ -41,12 +41,16 @@ describe('HttpAuthGateway', () => {
       phone: '11999999999',
     });
 
-    expect(post).toHaveBeenCalledWith('/auth/register', {
-      name: 'Ana',
-      email: 'ana@example.com',
-      password: 'senha-segura',
-      phone: '11999999999',
-    });
+    expect(post).toHaveBeenCalledWith(
+      '/auth/register',
+      {
+        name: 'Ana',
+        email: 'ana@example.com',
+        password: 'senha-segura',
+        phone: '11999999999',
+      },
+      { withCredentials: true },
+    );
     expect(result).toEqual(authResult);
   });
 
@@ -58,10 +62,14 @@ describe('HttpAuthGateway', () => {
       password: 'senha-segura',
     });
 
-    expect(post).toHaveBeenCalledWith('/auth/login', {
-      email: 'ana@example.com',
-      password: 'senha-segura',
-    });
+    expect(post).toHaveBeenCalledWith(
+      '/auth/login',
+      {
+        email: 'ana@example.com',
+        password: 'senha-segura',
+      },
+      { withCredentials: true },
+    );
     expect(result).toEqual(authResult);
   });
 
@@ -70,7 +78,7 @@ describe('HttpAuthGateway', () => {
 
     const result = await new HttpAuthGateway().refresh();
 
-    expect(post).toHaveBeenCalledWith('/auth/refresh');
+    expect(post).toHaveBeenCalledWith('/auth/refresh', undefined, { withCredentials: true });
     expect(result).toEqual(authResult);
   });
 
@@ -79,7 +87,7 @@ describe('HttpAuthGateway', () => {
 
     await new HttpAuthGateway().logout();
 
-    expect(post).toHaveBeenCalledWith('/auth/logout');
+    expect(post).toHaveBeenCalledWith('/auth/logout', undefined, { withCredentials: true });
   });
 
   test('gets the current user through the configured api route', async () => {

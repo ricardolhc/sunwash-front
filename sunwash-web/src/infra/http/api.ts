@@ -9,7 +9,6 @@ export const API_BASE_URL = typeof __VITE_API_URL__ === 'string' ? __VITE_API_UR
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true,
 });
 
 interface RetriableRequestConfig extends InternalAxiosRequestConfig {
@@ -20,7 +19,7 @@ let refreshPromise: Promise<void> | null = null;
 
 const refreshAccessToken = async (): Promise<void> => {
   if (!refreshPromise) {
-    refreshPromise = api.post<AuthResult>('/auth/refresh')
+    refreshPromise = api.post<AuthResult>('/auth/refresh', undefined, { withCredentials: true })
       .then((response) => {
         setAccessToken(response.data.accessToken);
       })

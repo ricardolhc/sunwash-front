@@ -6,6 +6,7 @@ export const ROUTES = {
   CHECKOUT: '/checkout',
   PANEL: '/painel',
   ADMIN: '/admin',
+  REPORTS: '/relatorios',
   LOGIN: '/login',
   REGISTER: '/cadastro',
 } as const;

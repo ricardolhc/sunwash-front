@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sun, Sparkles, Calendar, LayoutDashboard, Shield, LogOut, Menu, X } from 'lucide-react';
+import { Sun, Sparkles, Calendar, LayoutDashboard, Shield, FileSpreadsheet, LogOut, Menu, X } from 'lucide-react';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../../presentation/context/useAuth';
 
@@ -75,17 +75,30 @@ export const Navbar: React.FC = () => {
               </Link>
             )}
             {showAdminPanel && (
-              <Link
-                to={ROUTES.ADMIN}
-                className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
-                  isActive(ROUTES.ADMIN)
-                    ? 'text-cyan-700 bg-cyan-50 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                <Shield className="w-4 h-4 text-amber-500" />
-                Admin
-              </Link>
+              <>
+                <Link
+                  to={ROUTES.ADMIN}
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                    isActive(ROUTES.ADMIN)
+                      ? 'text-cyan-700 bg-cyan-50 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <Shield className="w-4 h-4 text-amber-500" />
+                  Admin
+                </Link>
+                <Link
+                  to={ROUTES.REPORTS}
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                    isActive(ROUTES.REPORTS)
+                      ? 'text-cyan-700 bg-cyan-50 font-semibold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-cyan-600" />
+                  Relatórios
+                </Link>
+              </>
             )}
           </nav>
 
@@ -160,13 +173,22 @@ export const Navbar: React.FC = () => {
             </Link>
           )}
           {showAdminPanel && (
-            <Link
-              to={ROUTES.ADMIN}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
-            >
-              Admin
-            </Link>
+            <>
+              <Link
+                to={ROUTES.ADMIN}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
+              >
+                Admin
+              </Link>
+              <Link
+                to={ROUTES.REPORTS}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-cyan-50 hover:text-cyan-700"
+              >
+                Relatórios
+              </Link>
+            </>
           )}
           <div className="pt-2 space-y-2">
             {isAnonymous ? (

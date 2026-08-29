@@ -184,6 +184,42 @@ describe('auth routing', () => {
     });
   });
 
+  test('ProtectedRoute sends a USER away from the reports area to the panel', async () => {
+    let pathname = '';
+    const { root } = renderWithRouter(
+      createElement(AuthContext.Provider, {
+        value: createAuthValue({ status: 'authenticated', user: authUser }),
+        children: createElement(
+          Routes,
+          {},
+          createElement(Route, {
+            path: ROUTES.REPORTS,
+            element: createElement(
+              ProtectedRoute,
+              {
+                allowedRoles: ['ADMIN'],
+                children: createElement('main', {}, 'Protected'),
+              },
+            ),
+          }),
+          createElement(Route, {
+            path: '*',
+            element: createElement(LocationProbe, { onLocation: (value) => { pathname = value; } }),
+          }),
+        ),
+      }),
+      [ROUTES.REPORTS],
+    );
+
+    await act(async () => {});
+
+    expect(pathname).toBe(ROUTES.PANEL);
+
+    act(() => {
+      root.unmount();
+    });
+  });
+
   test('PublicOnlyRoute sends an authenticated user away from /login', async () => {
     let pathname = '';
     const { root } = renderWithRouter(

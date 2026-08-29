@@ -5,6 +5,7 @@ import { SchedulePage } from './presentation/pages/SchedulePage';
 import { CheckoutPage } from './presentation/pages/CheckoutPage';
 import { ClientDashboardPage } from './presentation/pages/ClientDashboardPage';
 import { AdminDashboardPage } from './presentation/pages/AdminDashboardPage';
+import { ReportsPage } from './presentation/pages/ReportsPage';
 import { LoginPage } from './presentation/pages/LoginPage';
 import { RegisterPage } from './presentation/pages/RegisterPage';
 import { ProtectedRoute } from './presentation/routes/ProtectedRoute';
@@ -46,6 +47,14 @@ function App() {
           element={(
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AdminDashboardPage />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path={ROUTES.REPORTS}
+          element={(
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <ReportsPage />
             </ProtectedRoute>
           )}
         />

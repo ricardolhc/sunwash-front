@@ -1,9 +1,36 @@
-1. Contexto: Otimização de Busca
-⚡ Frontend: Implementar Debounce na busca por cliente
-Título: Adicionar debounce no input de pesquisa de clientes
+⚡ Frontend: Integração e Download do Relatório em PDF
+Título: Integrar endpoint de exportação e processar download via Blob no Painel de Relatórios
 
-Descrição: Atualmente, a barra de pesquisa de clientes dispara uma requisição HTTP para a API a cada tecla digitada (onKeyUp/onChange). Isso sobrecarrega o backend com requisições desnecessárias e pode causar corrida de dados (race conditions), onde uma requisição mais antiga sobrescreve o resultado da mais recente.
+Descrição: Implementar a lógica do botão "Exportar para PDF" no Painel de Relatórios. O frontend deverá montar a URL de exportação utilizando os filtros ativos na tela, fazer a requisição HTTP com configuração de resposta para tipo Blob e forçar o download do arquivo no navegador.
 
-Comportamento Atual: Digitar "Lucas" gera 5 requisições instantâneas (L, Lu, Luc, Luca, Lucas).
+Requisitos Técnicos e Integração:
 
-Comportamento Esperado: Deve ser implementado um delay (debounce) de aproximadamente 300ms a 500ms. A requisição só deve ser enviada após o usuário parar de digitar durante esse intervalo. (Sugestão: usar um hook customizado useDebounce ou a função debounce do Lodash).
+Endpoint: GET /api/reports/export
+
+Configuração da Requisição: Se utilizar Axios, deve-se explicitamente passar { responseType: 'blob' }. Se utilizar Fetch API, deve-se extrair com .blob().
+
+Montagem da Query String: Usar uma ferramenta como URLSearchParams para evitar strings incorretas (ex: ?startDate=2026-08-01&status=COMPLETED).
+
+Critérios de Aceite:
+
+Loading State: Ao clicar no botão "Exportar PDF", o botão deve entrar em estado de loading (spinner/desabilitado) para evitar cliques duplos, já que o backend pode demorar alguns segundos para montar o PDF.
+
+Processamento do Blob (Sucesso): Ao receber o status 200, o sistema deve:
+
+Criar uma URL temporária com window.URL.createObjectURL(blob).
+
+Criar dinamicamente uma tag <a>, setar o href com a URL do Blob e o atributo download="relatorio.pdf".
+
+Executar um click() programático na tag <a> para abrir a janela de "Salvar" do usuário.
+
+Limpar a URL da memória com window.URL.revokeObjectURL().
+
+Tratamento de Erro: Se a requisição falhar (ex: backend retorna 400 ou 500):
+
+O frontend não deve tentar baixar o arquivo de erro.
+
+Deve-se extrair a mensagem de erro (Lembrando que em respostas tipo Blob, será necessário ler o erro via FileReader ou blob.text() caso o backend retorne um JSON no status de erro).
+
+Exibir um Toast/Alerta na tela informando a falha ("Não foi possível exportar o relatório").
+
+Restabelecimento da UI: Finalizar o estado de loading independente do resultado (sucesso ou erro).

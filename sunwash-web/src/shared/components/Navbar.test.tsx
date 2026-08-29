@@ -37,6 +37,7 @@ describe('Navbar', () => {
     expect(container.textContent).toContain('Agendar Manutenção');
     expect(container.textContent).not.toContain('Painel do Cliente');
     expect(container.textContent).not.toContain('Admin');
+    expect(container.textContent).not.toContain('Relatórios');
 
     act(() => {
       root.unmount();
@@ -55,6 +56,7 @@ describe('Navbar', () => {
     expect(container.textContent).toContain('Painel do Cliente');
     expect(container.textContent).toContain('Agendar Manutenção');
     expect(container.textContent).not.toContain('Admin');
+    expect(container.textContent).not.toContain('Relatórios');
     expect(container.textContent).not.toContain('Entrar');
     expect(container.textContent).not.toContain('Cadastrar');
     expect(container.textContent).toContain('Sair');
@@ -79,6 +81,7 @@ describe('Navbar', () => {
     const { container, root } = renderNavbar();
 
     expect(container.textContent).toContain('Admin');
+    expect(container.textContent).toContain('Relatórios');
     expect(container.textContent).not.toContain('Agendar Manutenção');
     expect(container.textContent).not.toContain('Painel do Cliente');
     expect(container.textContent).not.toContain('Entrar');

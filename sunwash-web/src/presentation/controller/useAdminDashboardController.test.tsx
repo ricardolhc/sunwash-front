@@ -131,12 +131,14 @@ describe('useAdminDashboardController', () => {
           { client: queryClient },
           createElement(
             DependencyProvider,
-            { overrideDependencies: { appointmentGateway } },
-            createElement(AdminDashboardProbe, {
-              onValue: (value) => {
-                controller = value;
-              },
-            }),
+            {
+              overrideDependencies: { appointmentGateway },
+              children: createElement(AdminDashboardProbe, {
+                onValue: (value) => {
+                  controller = value;
+                },
+              }),
+            },
           ),
         ),
       );
